@@ -13,10 +13,11 @@ public interface GameObj{
   default boolean isAbove(GameObj that){return isAbove(that.pos().y);}
 
   default boolean isUnderneath(GameObj that){return that.isAbove(this);}
+  default boolean isUnderneath(double y){return pos().y > y;}
 
-  default boolean isLeftOf(double x){return pos().x+width()<x;}
+  default boolean isLeftOf(double x){return pos().x + width()<x;}
   default boolean isLeftOf(GameObj that){return isLeftOf(that.pos().x);}
-  default boolean isRightOf(double x){return pos().x + width() > x;}
+  default boolean isRightOf(double x){return pos().x > x;}
   default boolean isRightOf(GameObj that){return that.isLeftOf(this);}
 
   default boolean touches(GameObj that){

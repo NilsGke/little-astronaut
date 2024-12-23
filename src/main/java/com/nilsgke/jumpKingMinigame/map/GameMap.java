@@ -13,9 +13,9 @@ import java.util.Map;
 public class GameMap {
   static private final String FILE_PATH = "map.json";
 
-  public Platform[] platforms;
+  public List<Platform> platforms;
 
-  GameMap(Platform[] platforms) {
+  GameMap(List<Platform> platforms) {
     this.platforms = platforms;
   }
 
@@ -35,7 +35,7 @@ public class GameMap {
       platforms.add(new Platform(new Vertex(x, y), new Vertex(0, 0), (double) height, (double) width));
     }
 
-    return new GameMap(platforms.toArray(Platform[]::new));
+    return new GameMap(platforms);
   }
 
   public static Map<String, Object> parseJSON(String filePath) {

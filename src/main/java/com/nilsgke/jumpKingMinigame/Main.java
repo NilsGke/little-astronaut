@@ -47,7 +47,7 @@ public class Main implements Game {
     new Main().play();
   }
 
-  Main() {
+  public Main() {
     this.height = 600;
     this.width = 800;
 

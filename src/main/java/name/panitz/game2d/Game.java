@@ -9,6 +9,9 @@ public interface Game{
   int width();
   int height();
 
+  void setHeight(int height);
+  void setWidth(int width);
+
   GameObj player();
 
   List<List<? extends GameObj>> goss();
@@ -16,10 +19,11 @@ public interface Game{
   void init();
 
 
-  void doChecks();
+  void doChecks(int deltaTime);
 
   void keyPressedReaction(KeyEvent keyEvent);
 
+  void keyReleasedReaction(KeyEvent keyEvent);
   
   default void move(){
   	if (ended()) return;

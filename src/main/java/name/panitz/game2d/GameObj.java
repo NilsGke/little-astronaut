@@ -16,17 +16,18 @@ public interface GameObj{
 
   default boolean isLeftOf(double x){return pos().x+width()<x;}
   default boolean isLeftOf(GameObj that){return isLeftOf(that.pos().x);}
+  default boolean isRightOf(double x){return pos().x + width() > x;}
   default boolean isRightOf(GameObj that){return that.isLeftOf(this);}
 
   default boolean touches(GameObj that){
-    return 
+    return
      ! (    isAbove(that)  || isUnderneath(that)
          || isLeftOf(that) || isRightOf(that)    );
   }
 
   default boolean isStandingOnTopOf(GameObj that) {
-	    return 
-	    		 !(isLeftOf(that) || isRightOf(that)) 
+	    return
+	    		 !(isLeftOf(that) || isRightOf(that))
 	    		&& isAbove(that)
 	            && pos().y + height() + velocity().y+1.5 > that.pos().y;
 	  }

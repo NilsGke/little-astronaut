@@ -19,6 +19,11 @@ public class Vertex {
 		y = that.y;
 	}
 
+	@Override
+	public String toString() {
+		return "Vertex [x=" + x + ", y=" + y + "]";
+	}
+
 	public Vertex mult(double d) {
 		return new Vertex(d * x, d * y);
 	}

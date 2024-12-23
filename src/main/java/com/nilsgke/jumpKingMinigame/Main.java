@@ -136,12 +136,8 @@ public class Main implements Game {
       if (playerVelocity.x < -PLAYER_SPEED) playerVelocity.x = -PLAYER_SPEED;
     }
 
-    // update camera
-    camera.acceleration().x *= 0.9;
-    camera.acceleration().y *= 0.9;
-    camera.velocity().x *= 0.9;
-    camera.velocity().y *= 0.9;
 
+    // update camera
     // calc distance from cam to player
     double camXDistanceToPlayer = player.pos().x + player.width() / 2 - camera.pos().x;
     double xMarginFromCenter = width() / 2.0 - width() * CAM_MARGIN_PERCENTAGE;

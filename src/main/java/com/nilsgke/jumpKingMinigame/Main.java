@@ -18,8 +18,10 @@ enum Controls {
 }
 
 public class Main implements Game {
-  static final int PLAYER_SPEED = 3;
-  static final double GRAVITY = 1;
+  static final int PLAYER_SPEED = 4;
+  static final double GRAVITY = 1.5;
+  static final double MIN_JUMP = 6;
+  static final double MAX_JUMP = 12;
 
   static final double CAM_MARGIN_PERCENTAGE = 0.3;
 
@@ -31,13 +33,13 @@ public class Main implements Game {
 
   private boolean debugMode = false;
 
-
   GameMap gameMap;
   Camera camera;
 
   Controls controls = Controls.NORMAL;
 
   boolean canJump = false;
+  double jumpValue = 0;
   ArrayList<String> pressedKeys = new ArrayList<>();
 
 
@@ -100,41 +102,87 @@ public class Main implements Game {
     var playerVelocity = this.player.velocity();
 
     // gravity
-    playerVelocity.y += GRAVITY * (deltaTime / 100.0);
+    playerVelocity.y += GRAVITY * (deltaTime / 50.0);
 
     if (playerVelocity.y > 0) canJump = true;
     if (playerVelocity.y < 0) canJump = false;
 
+    boolean onGround = false;
+
+    // collision
     for (var platform : gameMap.platforms) {
       if (!player.isAbove(platform) && !player.isUnderneath(platform) && !player.isLeftOf(platform) && !player.isRightOf(platform)) {
         // player is touching a platform
 
-        player.velocity().y = 0;
-        player.pos().y = platform.pos().y - player.height();
+        double overlapTop = player.pos().y + player.height() - platform.pos().y;
+        double overlapBottom = platform.pos().y + platform.height() - player.pos().y;
+        double overlapLeft = player.pos().x + player.width() - platform.pos().x;
+        double overlapRight = platform.pos().x + platform.width() - player.pos().x;
+        double minOverlap = Math.min(Math.min(overlapTop, overlapBottom), Math.min(overlapLeft, overlapRight));
 
-        // floor drag
-        playerVelocity.x *= 0.95;
+        if (minOverlap == overlapTop) { // touching top (on ground)
+          player.velocity().y = 0;
+          player.pos().y = platform.pos().y - player.height();
+          onGround = true;
+        } else if (minOverlap == overlapBottom) { // touching bottom
+          player.pos().y = platform.pos().y + platform.height();
+          player.velocity().y = Math.abs(player.velocity().y);
 
-        // jump
-        if (canJump && pressedKeys.contains(" ")) {
-          player.velocity().y = -PLAYER_SPEED;
-          canJump = false;
+        } else if (minOverlap == overlapLeft) { // touching left
+          player.pos().x = platform.pos().x - player.width();
+          player.velocity().x = Math.abs(player.velocity().x) * -1;
+        } else if (minOverlap == overlapRight) { // touching right
+          player.pos().x = platform.pos().x  + platform.width();
+          player.velocity().x = Math.abs(player.velocity().x);
         }
-
-
-        break; // no need to check other platforms
       }
     }
 
 
     // walking
-    if (controls == Controls.NORMAL) {
+    if (controls == Controls.NORMAL || (controls == Controls.JUMP_KING && onGround && jumpValue == 0)) {
       // slowly increasing the velocity in the direction the user is holidng but cap max speed
       if (pressedKeys.contains("d")) playerVelocity.x += PLAYER_SPEED * deltaTime / 70.0;
       if (pressedKeys.contains("a")) playerVelocity.x -= PLAYER_SPEED * deltaTime / 70.0;
       if (playerVelocity.x > PLAYER_SPEED) playerVelocity.x = PLAYER_SPEED;
       if (playerVelocity.x < -PLAYER_SPEED) playerVelocity.x = -PLAYER_SPEED;
     }
+
+    // no movement on spacekey
+    if(controls == Controls.JUMP_KING && jumpValue != 0) playerVelocity.x = 0;
+
+
+    // jump force
+    if(controls == Controls.JUMP_KING && onGround && pressedKeys.contains(" ") && canJump)
+      jumpValue += PLAYER_SPEED * deltaTime / 100.0;
+
+    // jump jump-king
+    if (onGround && canJump && jumpValue > 0 && controls == Controls.JUMP_KING && !pressedKeys.contains(" ")) {
+      System.out.printf("jump value: %f\n", jumpValue);
+      player.velocity().y = -Math.max(Math.min(jumpValue, MAX_JUMP), MIN_JUMP);
+
+      if(pressedKeys.contains("a"))
+        playerVelocity.x -= PLAYER_SPEED;
+      if(pressedKeys.contains("d"))
+        playerVelocity.x += PLAYER_SPEED;
+
+      jumpValue = 0;
+      canJump = false;
+    }
+
+    // jump normal
+    if (onGround && canJump && controls == Controls.NORMAL && pressedKeys.contains(" ")) {
+      player.velocity().y = -PLAYER_SPEED * 2;
+      canJump = false;
+    }
+
+    // floor drag
+    if(onGround && !pressedKeys.contains("d") && !pressedKeys.contains("a"))
+      if(controls == Controls.NORMAL)
+        playerVelocity.x *= Math.pow(0.9, deltaTime / 10.0);
+      else if(controls == Controls.JUMP_KING)
+        playerVelocity.x = 0;
+
 
 
     // update camera
@@ -161,6 +209,7 @@ public class Main implements Game {
   @Override
   public void keyPressedReaction(KeyEvent keyEvent) {
     if (pressedKeys.contains(keyEvent.getKeyChar() + "")) return;
+    if (keyEvent.getKeyChar() == 'c') controls = controls == Controls.NORMAL ? Controls.JUMP_KING : Controls.NORMAL;
     pressedKeys.add(keyEvent.getKeyChar() + "");
   }
 

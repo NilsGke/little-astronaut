@@ -12,6 +12,8 @@ public abstract class Level {
   public Platform completeZone;
   public boolean minigameStarted = false;
 
+  abstract public int minCamY();
+
 
   public Level(Platform[] platforms, Minigame minigame, Vertex startPos, Platform completeZone) {
     this.platforms = platforms;

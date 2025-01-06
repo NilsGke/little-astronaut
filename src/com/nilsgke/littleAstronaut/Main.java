@@ -48,11 +48,11 @@ public class Main implements Game {
     new Main().play();
   }
 
-  public Main() throws Exception {
+  public Main() {
     this.height = 700;
     this.width = 1000;
 
-    this.player = new Player(new Vertex(0, 0), new Vertex(0, 0), 20, 20);
+    this.player = new Player(new Vertex(0, 0), new Vertex(0, 0), 40, 40);
     this.camera = new Camera(new Vertex(player.pos().x, player.pos().y));
     this.gameObjects = new ArrayList<>();
 
@@ -81,7 +81,7 @@ public class Main implements Game {
 
   @Override
   public void paintTo(Graphics g) {
-    g.setColor(Color.BLACK);
+    g.setColor(Color.CYAN);
     g.fillRect(0, 0, width(), height());
 
     // minigame overlay
@@ -254,6 +254,7 @@ public class Main implements Game {
 
     camera.update(deltaTime);
 
+    if(camera.pos().y > currentLevel.minCamY()) camera.pos().moveTo(new Vertex(camera.pos().x, currentLevel.minCamY()));
   }
 
   @Override

@@ -1,141 +1,73 @@
 package com.nilsgke.jumpKingMinigame.minigames;
 
-import name.panitz.game2d.Game;
-import name.panitz.game2d.GameObj;
-import name.panitz.game2d.SwingScreen;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.List;
-
-//public abstract class Minigame {
-//  public boolean started = false;
-//  Runnable onCompleted;
-//
-//
-//  Minigame(Runnable onCompleted){
-//    this.onCompleted = onCompleted;
-//  }
-//
-//  public abstract void start() throws Exception;
-//}
-
-//public abstract class Minigame implements Game {
-//  public boolean started = false;
-//  Runnable onCompleted;
-//
-//  private int WIDTH;
-//  private int HEIGHT;
-//
-//
-//  Minigame(int height, int width, Runnable onCompleted){
-//    this.HEIGHT = height;
-//    this.WIDTH = width;
-//    this.onCompleted = onCompleted;
-//  }
-//
-//
-//  @Override
-//  public int width() {
-//    return WIDTH;
-//  }
-//
-//  @Override
-//  public int height() {
-//    return HEIGHT;
-//  }
-//
-//  @Override
-//  public void setHeight(int height) {
-//    this.HEIGHT = height;
-//  }
-//
-//  @Override
-//  public void setWidth(int width) {
-//  this.WIDTH = width;
-//  }
-//
-//  @Override
-//  public GameObj player() {
-//    return null;
-//  }
-//
-//  @Override
-//  public List<List<? extends GameObj>> goss() {
-//    return List.of();
-//  }
-//
-//  @Override
-//  public void init() {
-//
-//  }
-//
-//  @Override
-//  public void doChecks(int deltaTime) {
-//
-//  }
-//
-//  @Override
-//  public void keyPressedReaction(KeyEvent keyEvent) {
-//
-//  }
-//
-//  @Override
-//  public void keyReleasedReaction(KeyEvent keyEvent) {
-//
-//  }
-//
-//  @Override
-//  public boolean won() {
-//    return false;
-//  }
-//
-//  @Override
-//  public boolean lost() {
-//    return false;
-//  }
-//}
 
 
-public interface Minigame {
+public abstract class Minigame {
 
-  int width();
-  int height();
+  public Thread thread = null;
+
+  abstract int width();
+
+  abstract int height();
 
 
-  void init();
+  abstract void init();
 
-  void doChecks(int deltaTime);
+  abstract void doChecks(int deltaTime);
 
-  void keyPressedReaction(KeyEvent keyEvent);
+  abstract void keyPressedReaction(KeyEvent keyEvent);
 
-  void keyReleasedReaction(KeyEvent keyEvent);
+  abstract void keyReleasedReaction(KeyEvent keyEvent);
 
-  void mouseClick(MouseEvent mouseEvent);
+  abstract void mouseClick(MouseEvent mouseEvent);
 
-  boolean won();
+  public abstract boolean won();
 
-  boolean lost();
+  public abstract boolean lost();
 
-  default boolean ended() {
+  public boolean ended() {
     return won() || lost();
   }
 
+  abstract void paintTo(Graphics g);
 
-  void paintTo(Graphics g);
+  public void play() {
+    var self = this;
+    this.thread = new Thread(() -> {
+      System.out.println("in thread");
 
+      // Initialize game state
+      init();
 
-  default void play() {
-    init();
-    var f = new JFrame();
-    f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    f.add(new MiniSwingScreen(this));
-    f.pack();
-    f.setResizable(false);
-    f.setLocationRelativeTo(null);
-    f.setVisible(true);
+      // Create and configure the JFrame on the EDT
+      var f = new JFrame("Minigame");
+      f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+      MiniSwingScreen screen = new MiniSwingScreen(self);
+      f.add(screen);
+      f.pack();
+      f.setResizable(false);
+      f.setLocationRelativeTo(null);
+      f.setAlwaysOnTop(true);
+      f.setVisible(true);
+
+      // loop to check if game has ended
+      new Timer(16, e -> {
+        if (ended()) {
+          ((Timer) e.getSource()).stop();
+          f.dispose(); // closes JFrame
+          System.out.println(won() ? "Minigame won!" : "Minigame lost!");
+        } else {
+          screen.repaint();
+        }
+      }).start();
+
+    });
+
+    this.thread.start();
   }
 }
 

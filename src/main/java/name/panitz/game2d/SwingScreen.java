@@ -16,7 +16,6 @@ public class SwingScreen extends JPanel{
         logic.doChecks(t.getDelay());
         repaint();
         getToolkit().sync();
-        requestFocus();
       });
       t.start();
 

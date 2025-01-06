@@ -13,7 +13,7 @@ import name.panitz.game2d.Vertex;
 //  }
 //
 //  @Override
-//  public void doChecks(int deltaTime, Player player) {
+//  public void checkIfInCompletionZone(int deltaTime, Player player) {
 //    this.checkCompleted(player);
 //  }
 //}

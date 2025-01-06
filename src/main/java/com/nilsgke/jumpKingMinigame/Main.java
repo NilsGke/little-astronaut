@@ -9,7 +9,6 @@ import name.panitz.game2d.Vertex;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +30,7 @@ public class Main implements Game {
   private int height;
 
   private Level currentLevel;
+  private int currentLevelIndex = 1;
 
   private boolean debugMode = false;
 
@@ -59,7 +59,7 @@ public class Main implements Game {
     loadLevel(1);
   }
 
-  private void loadLevel(int levelNumber) throws Exception {
+  private void loadLevel(int levelNumber) {
     System.out.printf("Loading level %d", levelNumber);
 
     Level newLevel = switch (levelNumber) {
@@ -81,8 +81,18 @@ public class Main implements Game {
 
   @Override
   public void paintTo(Graphics g) {
-    g.setColor(Color.DARK_GRAY);
+    g.setColor(Color.BLACK);
     g.fillRect(0, 0, width(), height());
+
+    // minigame overlay
+    if(this.currentLevel.minigameStarted) {
+      g.setColor(Color.DARK_GRAY);
+      g.fillRoundRect(width/3, height/3, Math.max(width/3, 150), Math.max(height/3, 100), 20, 20);
+      g.setColor(Color.WHITE);
+      g.setFont(new Font("Arial", Font.BOLD, 30));
+      g.drawString("Minigame Running", width/2 - 150, height / 2 );
+      return;
+    }
 
 
     if (debugMode) {
@@ -114,11 +124,29 @@ public class Main implements Game {
     player().paintTo(g);
     g.setColor(Color.BLUE);
     g.drawRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) player.width(), 5);
-    g.fillRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) ((player.width() / MAX_JUMP ) * Math.min(jumpValue, MAX_JUMP)) , 5);
+    g.fillRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) ((player.width() / MAX_JUMP) * Math.min(jumpValue, MAX_JUMP)), 5);
   }
 
   @Override
   public void doChecks(int deltaTime) {
+    // handle minigame stuff
+    if (currentLevel.minigameStarted) {
+      if (currentLevel.minigame.ended()) {
+        if (currentLevel.minigame.lost())
+          this.loadLevel(currentLevelIndex); // redo current level if lost
+        else
+          this.loadLevel(currentLevelIndex + 1); // next level if won
+      }
+
+      return; // don't do any more checks if minigame is running
+    }
+
+    var startedMinigame = currentLevel.checkIfInCompletionZone(player);
+    if(startedMinigame) {
+      this.player.velocity().moveTo(new Vertex(0,0));
+      return;
+    }
+
     // reset level if player is below 10000
     if (player.pos().y > 1000) {
       player.velocity().moveTo(new Vertex(0, 0));
@@ -126,8 +154,6 @@ public class Main implements Game {
       System.out.println("updated: " + player.pos().y);
       return;
     }
-
-    currentLevel.doChecks(deltaTime, player);
 
     var playerVelocity = this.player.velocity();
 

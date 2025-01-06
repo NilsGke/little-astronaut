@@ -8,7 +8,7 @@ import name.panitz.game2d.Vertex;
 public abstract class Level {
   public Vertex startPos;
   public Platform[] platforms;
-  Minigame minigame;
+  public Minigame minigame;
   public Platform completeZone;
   public boolean minigameStarted = false;
 
@@ -20,26 +20,20 @@ public abstract class Level {
     this.completeZone = completeZone;
   }
 
-  public abstract void doChecks(int deltaTime, Player player);
-
-  public void checkCompleted(Player player) {
-    if(completeZone.touches(player)) {
-      try {
-        minigame.init();
-      } catch (Exception e) {
-        System.err.println("could not start minigame");
-        throw new RuntimeException(e);
-      }
+  public boolean checkIfInCompletionZone(Player player) {
+    if (!this.minigameStarted && player.touches(this.completeZone)) {
+      System.out.println("start minigame");
+      this.startMinigame();
+      return true;
     }
+    return false;
   }
 
   public void startMinigame() {
     this.minigameStarted = true;
-    try {
-      this.minigame.play();
-    } catch (Exception e) {
-      System.err.println("could not start minigame");
-      throw new RuntimeException(e);
-    }
+
+    minigame.play();
+
+
   }
 }

@@ -8,7 +8,7 @@ enum PLAYER {
   USER, COMPUTER
 }
 
-public class TicTacToe implements Minigame {
+public class TicTacToe extends Minigame {
   PLAYER[][] board = new PLAYER[3][3];
   PLAYER turn = PLAYER.USER;
   PLAYER winner = null;
@@ -68,8 +68,11 @@ public class TicTacToe implements Minigame {
 
     turn = turn == PLAYER.COMPUTER ? PLAYER.USER : PLAYER.COMPUTER;
 
-    if (isGameOver()) winner = getWinner();
-    System.out.println(winner);
+    if (isGameOver()) {
+      winner = getWinner();
+      System.out.println(winner);
+    }
+
   }
 
   @Override

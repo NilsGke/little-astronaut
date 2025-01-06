@@ -10,7 +10,7 @@ import name.panitz.game2d.Vertex;
 /// At the end, he will enter a small rocket and fly to the first planet
 public class Level_1 extends Level {
 
-  public Level_1() throws Exception {
+  public Level_1() {
 
     super(
             new Platform[]{
@@ -20,18 +20,18 @@ public class Level_1 extends Level {
             },
             new TicTacToe(),
             new Vertex(0, 700),
-            new Platform(2800, 400, 200, 200)
+            new Platform(800, 400, 200, 200)
     );
 
   }
 
 
-  @Override
-  public void doChecks(int deltaTime, Player player) {
-    checkCompleted(player);
-    if (!this.minigameStarted && player.touches(this.completeZone)) {
-      System.out.println("start minigame");
-      this.startMinigame();
-    }
-  }
+//  @Override
+//  public void checkIfInCompletionZone(int deltaTime, Player player) {
+//    checkCompleted(player);
+//    if (!this.minigameStarted && player.touches(this.completeZone)) {
+//      System.out.println("start minigame");
+//      this.startMinigame();
+//    }
+//  }
 }

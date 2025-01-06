@@ -1,222 +1,203 @@
 package com.nilsgke.jumpKingMinigame.map;
 
-import com.nilsgke.jumpKingMinigame.Main;
+import com.nilsgke.jumpKingMinigame.levels.Level;
+import com.nilsgke.jumpKingMinigame.levels.Level_1;
 import name.panitz.game2d.Vertex;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Editor extends JPanel {
+public class Editor extends JFrame {
+  private final JComboBox<String> levelSelector;
+  private Level currentLevel;
+  private final JPanel drawingPanel;
+  private final ArrayList<Platform> platforms = new ArrayList<>();
+  private Platform completionZone;
+  private Vertex startPosition;
 
-  GameMap gameMap;
-  double x = 0;
-  double y = 0;
-  double zoom = 1;
-
-  Platform selectedPlatform = null;
+  private double offsetX = 0;
+  private double offsetY = 0;
+  private final double moveSpeed = 40;
 
   public static void main(String[] args) {
-    new Editor();
+    SwingUtilities.invokeLater(Editor::new);
   }
 
-  private JPanel createJPanel() {
-    JPanel commandPanel = new JPanel();
-    commandPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Align buttons to the left
+  public Editor() {
+    setTitle("Graphical Level Editor");
+    setSize(1200, 800);
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    setLayout(new BorderLayout());
 
-    JButton newPlatformButton = new JButton("new Platform");
-    newPlatformButton.addActionListener(e -> {
-      gameMap.platforms.add(new Platform(
-              new Vertex(x, y),
-              new Vertex(getWidth() / 2.0 + x, getHeight() / 2.0 + y),
-              20, 50
-      ));
-      paintComponent(getGraphics());
-    });
+    // Level Selector
+    JPanel topPanel = new JPanel();
+    levelSelector = new JComboBox<>(new String[]{"New Level", "Level_1"});
+    levelSelector.addActionListener(e -> loadLevel((String) levelSelector.getSelectedItem()));
+    topPanel.add(new JLabel("Select Level: "));
+    topPanel.add(levelSelector);
+    add(topPanel, BorderLayout.NORTH);
 
-
-    JButton saveButton = new JButton("SAVE");
-    saveButton.addActionListener(e -> {
-      var stringBuilder = new StringBuilder();
-      stringBuilder.append("{\n");
-      stringBuilder.append("\"platforms\": [\n");
-      for (var platform : gameMap.platforms) stringBuilder.append(platform.toJSON()).append("\n");
-      stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length() - 1); // remove trailing comma
-      stringBuilder.append("]\n");
-      stringBuilder.append("}");
-
-      System.out.println("\n");
-      System.out.println(stringBuilder);
-    });
-
-    JButton launchButton = new JButton("launch game");
-    launchButton.addActionListener(e -> {
-      try {
-        new Main().play();
-      } catch (Exception ex) {
-        throw new RuntimeException(ex);
-      }
-    });
-
-
-    commandPanel.add(newPlatformButton);
-    commandPanel.add(saveButton);
-    commandPanel.add(launchButton);
-    return commandPanel;
-  }
-
-  Editor() {
-
-    try {
-      gameMap = GameMap.fromJson();
-    } catch (Exception e) {
-      System.err.println(e.getMessage());
-    }
-
-    setFocusable(true);
-    requestFocusInWindow();
-
-    addFocusListener(new FocusAdapter() {
+    // Drawing Panel
+    drawingPanel = new JPanel() {
       @Override
-      public void focusGained(FocusEvent e) {
-        System.out.println("Editor gained focus");
+      protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        renderLevel(g);
       }
-    });
-
-    addComponentListener(new ComponentAdapter() {
-      public void componentResized(ComponentEvent e) {
-        var component = e.getComponent();
-      }
-    });
-    addMouseWheelListener(e -> {
-      zoom += e.getWheelRotation() * -0.01;
-      paintComponent(getGraphics());
-    });
-    addMouseListener(new MouseAdapter() {
+    };
+    drawingPanel.setBackground(Color.WHITE);
+    drawingPanel.setPreferredSize(new Dimension(1000, 700));
+    drawingPanel.addMouseListener(new MouseAdapter() {
       @Override
-      public void mousePressed(java.awt.event.MouseEvent e) {
-        int mouseX = e.getX();
-        int mouseY = e.getY();
-
-        selectedPlatform = null;
-
-        for (var platform : gameMap.platforms) {
-          if (!platform.isLeftOf(mouseX / zoom - x) && !platform.isRightOf(mouseX / zoom - x) && !platform.isAbove(mouseY / zoom - y) && !platform.isUnderneath(mouseY / zoom - y))
-            selectedPlatform = platform;
-        }
-
-        paintComponent(getGraphics());
-        requestFocusInWindow();
+      public void mousePressed(MouseEvent e) {
+        handleMouseClick(e);
       }
     });
+    add(drawingPanel, BorderLayout.CENTER);
+
+    // Add key listener for panning
     addKeyListener(new KeyAdapter() {
       @Override
       public void keyPressed(KeyEvent e) {
-        super.keyPressed(e);
-
-        boolean shiftPressed = (e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) != 0;
-        boolean ctrlPressed = (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0;
-
         switch (e.getKeyCode()) {
-          // move camera
-          case KeyEvent.VK_W:
-            y += 100 * (1 / zoom);
-            break;
-          case KeyEvent.VK_S:
-            y -= 100 * (1 / zoom);
-            break;
-          case KeyEvent.VK_A:
-            x += 100 * (1 / zoom);
-            break;
-          case KeyEvent.VK_D:
-            x -= 100 * (1 / zoom);
-            break;
-
-          // move platforms
-          case KeyEvent.VK_UP:
-            if (selectedPlatform != null)
-              selectedPlatform.move(0, shiftPressed ? -1 : -10);
-            break;
-
-          case KeyEvent.VK_DOWN:
-            if (selectedPlatform != null)
-              selectedPlatform.move(0, shiftPressed ? 1 : 10);
-            break;
-
-          case KeyEvent.VK_LEFT:
-            if (selectedPlatform != null)
-              selectedPlatform.move(shiftPressed ? -1 : -10, 0);
-            break;
-
-          case KeyEvent.VK_RIGHT:
-            if (selectedPlatform != null)
-              selectedPlatform.move(shiftPressed ? 1 : 10, 0);
-            break;
-
-          case KeyEvent.VK_X:
-            if (selectedPlatform != null)
-              selectedPlatform.setWidth(selectedPlatform.width() + (ctrlPressed ? -1 : 1) * (shiftPressed ? 1 : 10));
-            break;
-
-          case KeyEvent.VK_Y:
-            if (selectedPlatform != null)
-              selectedPlatform.setHeight(selectedPlatform.height() + (ctrlPressed ? -1 : 1) * (shiftPressed ? 1 : 10));
-            break;
-
-          case KeyEvent.VK_BACK_SPACE:
-            if(selectedPlatform != null)
-              gameMap.platforms.remove(selectedPlatform);
-
-          default:
-            break;
+          case KeyEvent.VK_W -> offsetY += moveSpeed;
+          case KeyEvent.VK_S -> offsetY -= moveSpeed;
+          case KeyEvent.VK_A -> offsetX += moveSpeed;
+          case KeyEvent.VK_D -> offsetX -= moveSpeed;
         }
-        paintComponent(getGraphics());
+        drawingPanel.repaint();
       }
     });
 
-    repaint();
-    getToolkit().sync();
-    requestFocus();
+    // Control Buttons
+    JPanel bottomPanel = new JPanel();
+    JButton saveButton = new JButton("Save Level");
+    saveButton.addActionListener(e -> saveLevel());
+    JButton addPlatformButton = new JButton("Add Platform");
+    addPlatformButton.addActionListener(e -> addPlatform());
+    bottomPanel.add(saveButton);
+    bottomPanel.add(addPlatformButton);
+    add(bottomPanel, BorderLayout.SOUTH);
 
+    setVisible(true);
+    loadLevel("New Level");
 
-    var f = new javax.swing.JFrame();
-    f.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-
-    // control buttons
-    JPanel commandPanel = createJPanel();
-
-    // Set up the frame layout
-    f.setLayout(new BorderLayout());
-    f.add(commandPanel, BorderLayout.NORTH); // Add command panel at the top
-    f.add(this, BorderLayout.CENTER); // Add editor in the center
-
-    f.pack();
-    f.setVisible(true);
-
-    // make canvas focusable
-    this.requestFocusInWindow();
-
-
+    // Make the JFrame focusable for key events
+    setFocusable(true);
+    requestFocusInWindow();
   }
 
-  @Override
-  public Dimension getPreferredSize() {
-    return new Dimension(new Dimension(800, 600));
+  private void loadLevel(String levelName) {
+    if (levelName.equals("New Level")) {
+      currentLevel = null;
+      platforms.clear();
+      completionZone = null;
+      startPosition = null;
+    } else if (levelName.equals("Level_1")) {
+      currentLevel = new Level_1();
+      platforms.clear();
+      platforms.addAll(List.of(currentLevel.platforms));
+      startPosition = currentLevel.startPos;
+      completionZone = currentLevel.completeZone;
+    }
+    drawingPanel.repaint();
   }
 
+  private void saveLevel() {
+    StringBuilder code = new StringBuilder();
+    code.append("new Platform[]{\n");
 
-  @Override
-  protected void paintComponent(Graphics g) {
-    super.paintComponent(g);
-    g.setColor(Color.WHITE);
-    g.fillRect(0, 0, getWidth(), getHeight());
+    for (Platform platform : platforms)
+      code.append("    ").append(platform.toCode()).append(",\n");
 
-    for (var platform : gameMap.platforms) {
-      g.setColor(Color.BLACK);
-      if (selectedPlatform == platform) g.setColor(Color.RED);
-      g.fillRect((int) (zoom * (platform.pos().x + x)), (int) (zoom * (platform.pos().y + y)), (int) (zoom * platform.width()), (int) (zoom * platform.height()));
 
+    // delete last comma
+    code.deleteCharAt(code.length() - 2);
+    code.append("},\n");
+
+    // minigame
+    code.append("new TicTacToe(),\n");
+
+    // start position
+    if (startPosition != null)
+      code.append("new Vertex(").append((int) startPosition.x).append(", ").append((int) startPosition.y).append("),\n");
+    else code.append("new Vertex(0, 700),\n");
+
+
+    // completion zone
+    if (completionZone != null) {
+      code.append("new Platform(").append((int) completionZone.pos().x).append(", ").append((int) completionZone.pos().y).append(", ").append((int) completionZone.width()).append(", ").append((int) completionZone.height()).append(")\n");
+    } else {
+      code.append("new Platform(0, 0, 0, 0)\n");  // default
+    }
+
+    System.out.println(code);
+  }
+
+  private void addPlatform() {
+    String input = JOptionPane.showInputDialog(this, "Enter Platform (x, y, width, height):");
+    if (input != null) {
+      String[] parts = input.split(",");
+      if (parts.length == 4) {
+        try {
+          double x = Double.parseDouble(parts[0].trim());
+          double y = Double.parseDouble(parts[1].trim());
+          double width = Double.parseDouble(parts[2].trim());
+          double height = Double.parseDouble(parts[3].trim());
+          platforms.add(new Platform((int) x, (int) y, width, height));
+          drawingPanel.repaint();
+        } catch (NumberFormatException e) {
+          JOptionPane.showMessageDialog(this, "Invalid input! Please enter valid numbers.");
+        }
+      } else {
+        JOptionPane.showMessageDialog(this, "Invalid format! Use: x, y, width, height");
+      }
+    }
+  }
+
+  private void handleMouseClick(MouseEvent e) {
+    String[] options = {"Set Start Position", "Set Completion Zone", "Delete Platform"};
+    int choice = JOptionPane.showOptionDialog(this, "Choose Action", "Mouse Action", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+    if (choice == 0) { // Set Start Position
+      startPosition = new Vertex(e.getX() - offsetX, e.getY() - offsetY);
+    } else if (choice == 1) { // Set Completion Zone
+      String input = JOptionPane.showInputDialog(this, "Enter Completion Zone Width, Height:");
+      if (input != null) {
+        String[] parts = input.split(",");
+        if (parts.length == 2) {
+          try {
+            double width = Double.parseDouble(parts[0].trim());
+            double height = Double.parseDouble(parts[1].trim());
+            completionZone = new Platform((int) (e.getX() - offsetX), (int) (e.getY() - offsetY), width, height);
+          } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid dimensions!");
+          }
+        }
+      }
+    } else if (choice == 2) { // Delete Platform
+      platforms.removeIf(p -> p.touches((int) (e.getX() - offsetX), (int) (e.getY() - offsetY)));
+    }
+    drawingPanel.repaint();
+  }
+
+  private void renderLevel(Graphics g) {
+    g.setColor(Color.BLACK);
+    for (Platform p : platforms) {
+      g.fillRect((int) (p.pos().x + offsetX), (int) (p.pos().y + offsetY), (int) p.width(), (int) p.height());
+    }
+
+    if (startPosition != null) {
+      g.setColor(Color.BLUE);
+      g.fillOval((int) (startPosition.x + offsetX), (int) (startPosition.y + offsetY), 10, 10);
+    }
+
+    if (completionZone != null) {
+      g.setColor(Color.RED);
+      g.drawRect((int) (completionZone.pos().x + offsetX), (int) (completionZone.pos().y + offsetY), (int) completionZone.width(), (int) completionZone.height());
     }
   }
 }
-

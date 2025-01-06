@@ -24,14 +24,4 @@ public class Level_1 extends Level {
     );
 
   }
-
-
-//  @Override
-//  public void checkIfInCompletionZone(int deltaTime, Player player) {
-//    checkCompleted(player);
-//    if (!this.minigameStarted && player.touches(this.completeZone)) {
-//      System.out.println("start minigame");
-//      this.startMinigame();
-//    }
-//  }
 }

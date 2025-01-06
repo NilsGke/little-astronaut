@@ -13,7 +13,7 @@ public abstract class Level {
   public boolean minigameStarted = false;
 
 
-  Level(Platform[] platforms, Minigame minigame, Vertex startPos, Platform completeZone) {
+  public Level(Platform[] platforms, Minigame minigame, Vertex startPos, Platform completeZone) {
     this.platforms = platforms;
     this.minigame = minigame;
     this.startPos = startPos;

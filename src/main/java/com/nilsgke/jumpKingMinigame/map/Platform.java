@@ -37,8 +37,12 @@ public final class Platform implements GameObj {
     this.pos.moveTo(new Vertex(pos.x + x, pos.y + y));
   }
 
-  public String toJSON() {
-    return "{\"x\": " + (int) pos.x + ", \"y\": " + (int) pos.y + ", \"height\": " + (int) height + ", \"width\": " + (int) width + "},";
+  public String toCode() {
+    return "new Platform(" +
+            (int) pos.x + ", " +
+            (int) pos.y + ", " +
+            (int) width + ", " +
+            (int) height + ")";
   }
 
   @Override

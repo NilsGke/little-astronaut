@@ -26,6 +26,10 @@ public interface GameObj{
          || isLeftOf(that) || isRightOf(that)    );
   }
 
+  default boolean touches(int x, int y) {
+    return !(isAbove(y)  || isUnderneath(y) || isLeftOf(x) || isRightOf(x));
+  }
+
   default boolean isStandingOnTopOf(GameObj that) {
 	    return
 	    		 !(isLeftOf(that) || isRightOf(that))

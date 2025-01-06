@@ -1,4 +1,4 @@
-package com.nilsgke.jumpKingMinigame.minigames;
+package com.nilsgke.littleAstronaut.minigames;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

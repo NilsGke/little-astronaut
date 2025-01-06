@@ -1,7 +1,7 @@
-package com.nilsgke.jumpKingMinigame.map;
+package com.nilsgke.littleAstronaut.map;
 
-import com.nilsgke.jumpKingMinigame.levels.Level;
-import com.nilsgke.jumpKingMinigame.levels.Level_1;
+import com.nilsgke.littleAstronaut.levels.Level;
+import com.nilsgke.littleAstronaut.levels.Level_1;
 import name.panitz.game2d.Vertex;
 
 import javax.swing.*;

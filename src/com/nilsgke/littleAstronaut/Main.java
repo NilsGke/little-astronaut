@@ -1,8 +1,8 @@
-package com.nilsgke.jumpKingMinigame;
+package com.nilsgke.littleAstronaut;
 
 
-import com.nilsgke.jumpKingMinigame.levels.Level;
-import com.nilsgke.jumpKingMinigame.levels.Level_1;
+import com.nilsgke.littleAstronaut.levels.Level;
+import com.nilsgke.littleAstronaut.levels.Level_1;
 import name.panitz.game2d.Game;
 import name.panitz.game2d.GameObj;
 import name.panitz.game2d.Vertex;

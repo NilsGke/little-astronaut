@@ -1,4 +1,4 @@
-package com.nilsgke.jumpKingMinigame;
+package com.nilsgke.littleAstronaut;
 
 import name.panitz.game2d.GameObj;
 import name.panitz.game2d.Vertex;

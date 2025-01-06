@@ -1,8 +1,8 @@
-package com.nilsgke.jumpKingMinigame.levels;
+package com.nilsgke.littleAstronaut.levels;
 
-import com.nilsgke.jumpKingMinigame.Player;
-import com.nilsgke.jumpKingMinigame.map.Platform;
-import com.nilsgke.jumpKingMinigame.minigames.Minigame;
+import com.nilsgke.littleAstronaut.Player;
+import com.nilsgke.littleAstronaut.map.Platform;
+import com.nilsgke.littleAstronaut.minigames.Minigame;
 import name.panitz.game2d.Vertex;
 
 public abstract class Level {

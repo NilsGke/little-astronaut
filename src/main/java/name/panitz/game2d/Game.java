@@ -3,7 +3,7 @@ import java.util.List;
 import java.awt.event.*;
 import java.awt.*;
 
-public interface Game{
+public interface Game {
 
 
   int width();
@@ -51,6 +51,7 @@ public interface Game{
     f.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
     f.add(new SwingScreen(this));
     f.pack();
+    f.setLocationRelativeTo(null); // centers the window on the screen
     f.setVisible(true);
   }
 }

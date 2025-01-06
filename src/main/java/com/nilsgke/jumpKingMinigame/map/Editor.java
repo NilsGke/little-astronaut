@@ -51,7 +51,11 @@ public class Editor extends JPanel {
 
     JButton launchButton = new JButton("launch game");
     launchButton.addActionListener(e -> {
-      new Main().play();
+      try {
+        new Main().play();
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
     });
 
 

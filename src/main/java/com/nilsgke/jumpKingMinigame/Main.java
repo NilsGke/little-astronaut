@@ -1,7 +1,8 @@
 package com.nilsgke.jumpKingMinigame;
 
 
-import com.nilsgke.jumpKingMinigame.map.GameMap;
+import com.nilsgke.jumpKingMinigame.levels.Level;
+import com.nilsgke.jumpKingMinigame.levels.Level_1;
 import name.panitz.game2d.Game;
 import name.panitz.game2d.GameObj;
 import name.panitz.game2d.Vertex;
@@ -13,8 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 enum Controls {
-  JUMP_KING,
-  NORMAL,
+  JUMP_KING, NORMAL,
 }
 
 public class Main implements Game {
@@ -23,51 +23,60 @@ public class Main implements Game {
   static final double MIN_JUMP = 6;
   static final double MAX_JUMP = 12;
 
-  static final double CAM_MARGIN_PERCENTAGE = 0.3;
+  static final double CAM_MARGIN_PERCENTAGE = 0.4;
 
   Player player;
   List<List<? extends GameObj>> gameObjects;
   private int width;
   private int height;
 
+  private Level currentLevel;
 
   private boolean debugMode = false;
 
-  GameMap gameMap;
+  //GameMap gameMap;
   Camera camera;
 
-  Controls controls = Controls.NORMAL;
+  Controls controls = Controls.JUMP_KING;
 
   boolean canJump = false;
   double jumpValue = 0;
   ArrayList<String> pressedKeys = new ArrayList<>();
 
 
-  public static void main(String[] args) throws FileNotFoundException {
+  public static void main(String[] args) throws Exception {
     new Main().play();
   }
 
-  public Main() {
-    this.height = 600;
-    this.width = 800;
+  public Main() throws Exception {
+    this.height = 700;
+    this.width = 1000;
 
-    this.player = new Player(
-            new Vertex(width() / 2.0, height() - 100),
-            new Vertex(0, 0),
-            20,
-            20
-    );
+    this.player = new Player(new Vertex(0, 0), new Vertex(0, 0), 20, 20);
     this.camera = new Camera(new Vertex(player.pos().x, player.pos().y));
     this.gameObjects = new ArrayList<>();
 
+    loadLevel(1);
+  }
 
-    try {
-      this.gameMap = GameMap.fromJson();
-    } catch (FileNotFoundException e) {
-      System.err.printf(e.getMessage());
-      System.exit(1);
+  private void loadLevel(int levelNumber) throws Exception {
+    System.out.printf("Loading level %d", levelNumber);
+
+    Level newLevel = switch (levelNumber) {
+      case 1 -> new Level_1();
+//      case 2 -> new Level_2();
+//      case 3 -> new Level_3();
+      default -> null;
+    };
+
+    if (newLevel == null) {
+      System.out.println("COMPLETED!");
+      return;
     }
 
+    this.currentLevel = newLevel;
+    player.pos().moveTo(this.currentLevel.startPos);
+    player.velocity().moveTo(new Vertex(0, 0));
   }
 
   @Override
@@ -76,7 +85,7 @@ public class Main implements Game {
     g.fillRect(0, 0, width(), height());
 
 
-    if(debugMode) {
+    if (debugMode) {
       // draw camera margin
       g.setColor(Color.BLACK);
       int camMarginTop = (int) (height() * CAM_MARGIN_PERCENTAGE);
@@ -92,13 +101,34 @@ public class Main implements Game {
 
     g.setColor(Color.WHITE);
     for (var gos : goss()) gos.forEach(go -> go.paintTo(g));
-    player().paintTo(g);
-    for (var platform : gameMap.platforms)
+
+
+    for (var platform : currentLevel.platforms)
       platform.paintTo(g);
+
+    // paint completed zone
+    g.setColor(Color.MAGENTA);
+    g.drawRect((int) currentLevel.completeZone.pos().x, (int) currentLevel.completeZone.pos().y, (int) currentLevel.completeZone.width(), (int) currentLevel.completeZone.height());
+
+
+    player().paintTo(g);
+    g.setColor(Color.BLUE);
+    g.drawRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) player.width(), 5);
+    g.fillRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) ((player.width() / MAX_JUMP ) * Math.min(jumpValue, MAX_JUMP)) , 5);
   }
 
   @Override
   public void doChecks(int deltaTime) {
+    // reset level if player is below 10000
+    if (player.pos().y > 1000) {
+      player.velocity().moveTo(new Vertex(0, 0));
+      player.pos().moveTo(currentLevel.startPos);
+      System.out.println("updated: " + player.pos().y);
+      return;
+    }
+
+    currentLevel.doChecks(deltaTime, player);
+
     var playerVelocity = this.player.velocity();
 
     // gravity
@@ -110,7 +140,7 @@ public class Main implements Game {
     boolean onGround = false;
 
     // collision
-    for (var platform : gameMap.platforms) {
+    for (var platform : currentLevel.platforms) {
       if (!player.isAbove(platform) && !player.isUnderneath(platform) && !player.isLeftOf(platform) && !player.isRightOf(platform)) {
         // player is touching a platform
 
@@ -132,7 +162,7 @@ public class Main implements Game {
           player.pos().x = platform.pos().x - player.width();
           player.velocity().x = Math.abs(player.velocity().x) * -1;
         } else if (minOverlap == overlapRight) { // touching right
-          player.pos().x = platform.pos().x  + platform.width();
+          player.pos().x = platform.pos().x + platform.width();
           player.velocity().x = Math.abs(player.velocity().x);
         }
       }
@@ -149,11 +179,11 @@ public class Main implements Game {
     }
 
     // no movement on spacekey
-    if(controls == Controls.JUMP_KING && jumpValue != 0) playerVelocity.x = 0;
+    if (controls == Controls.JUMP_KING && jumpValue != 0) playerVelocity.x = 0;
 
 
     // jump force
-    if(controls == Controls.JUMP_KING && onGround && pressedKeys.contains(" ") && canJump)
+    if (controls == Controls.JUMP_KING && onGround && pressedKeys.contains(" ") && canJump)
       jumpValue += PLAYER_SPEED * deltaTime / 100.0;
 
     // jump jump-king
@@ -161,10 +191,8 @@ public class Main implements Game {
       System.out.printf("jump value: %f\n", jumpValue);
       player.velocity().y = -Math.max(Math.min(jumpValue, MAX_JUMP), MIN_JUMP);
 
-      if(pressedKeys.contains("a"))
-        playerVelocity.x -= PLAYER_SPEED;
-      if(pressedKeys.contains("d"))
-        playerVelocity.x += PLAYER_SPEED;
+      if (pressedKeys.contains("a")) playerVelocity.x -= PLAYER_SPEED;
+      if (pressedKeys.contains("d")) playerVelocity.x += PLAYER_SPEED;
 
       jumpValue = 0;
       canJump = false;
@@ -177,12 +205,9 @@ public class Main implements Game {
     }
 
     // floor drag
-    if(onGround && !pressedKeys.contains("d") && !pressedKeys.contains("a"))
-      if(controls == Controls.NORMAL)
-        playerVelocity.x *= Math.pow(0.9, deltaTime / 10.0);
-      else if(controls == Controls.JUMP_KING)
-        playerVelocity.x = 0;
-
+    if (onGround && !pressedKeys.contains("d") && !pressedKeys.contains("a"))
+      if (controls == Controls.NORMAL) playerVelocity.x *= Math.pow(0.9, deltaTime / 10.0);
+      else if (controls == Controls.JUMP_KING) playerVelocity.x = 0;
 
 
     // update camera
@@ -191,15 +216,14 @@ public class Main implements Game {
     double xMarginFromCenter = width() / 2.0 - width() * CAM_MARGIN_PERCENTAGE;
     if (Math.abs(camXDistanceToPlayer) > xMarginFromCenter)
       // accelerate camera to the direction of the player
-      camera.acceleration().x += (camXDistanceToPlayer - (Math.signum(camXDistanceToPlayer) * xMarginFromCenter ))  * deltaTime / 100.0;
+      camera.acceleration().x += (camXDistanceToPlayer - (Math.signum(camXDistanceToPlayer) * xMarginFromCenter)) * deltaTime / 100.0;
 
 
     double camYDistanceToPlayer = player.pos().y + player.height() / 2 - camera.pos().y;
     double yMarginFromCenter = height() / 2.0 - height() * CAM_MARGIN_PERCENTAGE;
     if (Math.abs(camYDistanceToPlayer) > yMarginFromCenter)
       camera.acceleration().y += (camYDistanceToPlayer - (Math.signum(camYDistanceToPlayer) * yMarginFromCenter)) * deltaTime / 14.0;
-    else
-      camera.velocity().y *= 0.5; // prevents hitting ground camera bounce to bottom and back
+    else camera.velocity().y *= 0.5; // prevents hitting ground camera bounce to bottom and back
 
 
     camera.update(deltaTime);

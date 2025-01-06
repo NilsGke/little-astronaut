@@ -24,6 +24,10 @@ public final class Platform implements GameObj {
     this.width = width;
   }
 
+  public Platform(int x, int y, double width, double height) {
+    this(new Vertex(x,y), new Vertex(0,0), height, width);
+  }
+
   public void paintTo(Graphics g) {
     g.setColor(Color.GREEN);
     g.fillRect((int) pos.x, (int) pos.y, (int) width, (int) height);

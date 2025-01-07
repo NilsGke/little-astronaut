@@ -1,5 +1,6 @@
 package com.nilsgke.littleAstronaut.map;
 
+import com.nilsgke.littleAstronaut.sprites.ImageTileset;
 import name.panitz.game2d.GameObj;
 import name.panitz.game2d.Vertex;
 

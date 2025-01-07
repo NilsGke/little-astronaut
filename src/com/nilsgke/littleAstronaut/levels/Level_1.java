@@ -1,7 +1,7 @@
 package com.nilsgke.littleAstronaut.levels;
 
 
-import com.nilsgke.littleAstronaut.map.ImageTileset;
+import com.nilsgke.littleAstronaut.sprites.ImageTileset;
 import com.nilsgke.littleAstronaut.map.Platform;
 import com.nilsgke.littleAstronaut.minigames.TicTacToe;
 import name.panitz.game2d.Vertex;

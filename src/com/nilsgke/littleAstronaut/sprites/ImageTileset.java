@@ -1,4 +1,4 @@
-package com.nilsgke.littleAstronaut.map;
+package com.nilsgke.littleAstronaut.sprites;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -6,9 +6,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class ImageTileset {
-  BufferedImage tile;
-  BufferedImage leftEnd;
-  BufferedImage rightEnd;
+  public BufferedImage tile;
+  public BufferedImage leftEnd;
+  public BufferedImage rightEnd;
 
   public ImageTileset(String tileImgPath, String leftEndImgPath, String rightEndImgPath){
     try {

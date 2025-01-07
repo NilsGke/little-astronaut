@@ -52,7 +52,7 @@ public class Main implements Game {
     this.height = 700;
     this.width = 1000;
 
-    this.player = new Player(new Vertex(0, 0), new Vertex(0, 0), 40, 40);
+    this.player = new Player(new Vertex(0, 0), new Vertex(0, 0), 70, 70);
     this.camera = new Camera(new Vertex(player.pos().x, player.pos().y));
     this.gameObjects = new ArrayList<>();
 
@@ -234,6 +234,8 @@ public class Main implements Game {
     if (onGround && !pressedKeys.contains("d") && !pressedKeys.contains("a"))
       if (controls == Controls.NORMAL) playerVelocity.x *= Math.pow(0.9, deltaTime / 10.0);
       else if (controls == Controls.JUMP_KING) playerVelocity.x = 0;
+
+    if(playerVelocity.x != 0.0) player.lastDirection = player.velocity.x > 0 ? Player.XDirection.RIGHT : Player.XDirection.LEFT;
 
 
     // update camera

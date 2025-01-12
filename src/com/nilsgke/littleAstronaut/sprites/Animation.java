@@ -12,6 +12,7 @@ public class Animation {
   int frameCount;
   long startedAt;
   int frameWidth;
+  int frameHeight;
   BufferedImage[] frames;
   int durationMs;
   boolean repeat;
@@ -25,7 +26,7 @@ public class Animation {
 
     frames = new BufferedImage[frameCount];
     this.frameWidth = sprite.getWidth() / frameCount;
-    int frameHeight = sprite.getHeight();
+    this.frameHeight = sprite.getHeight();
     for (int i = 0; i < frameCount; i++) {
       System.out.println(frameWidth * (i + 1));
       frames[i] = sprite.getSubimage(frameWidth * i, 0, frameWidth, frameHeight);
@@ -37,7 +38,9 @@ public class Animation {
   public void paintTo(Graphics g, int x, int y, boolean mirrored) {
     long timeSinceStart = System.currentTimeMillis() - startedAt;
     long timeSinceLastRestart = timeSinceStart % durationMs;
-    int currentFrameIndex = (int) (timeSinceLastRestart / (durationMs / frameCount) % frameCount);
+    int currentFrameIndex = !repeat && timeSinceLastRestart != timeSinceStart ? // dont repeat if finished once
+            frameCount - 1 :
+            (int) (timeSinceLastRestart / (durationMs / frameCount) % frameCount);
 
     paintFrameTo(currentFrameIndex, g, x, y, mirrored);
   }
@@ -56,13 +59,13 @@ public class Animation {
       g2d.translate(x + frameWidth * 2, y);
       g2d.scale(-1, 1);
 
-      g2d.drawImage(frames[frame], 0, 0, frameWidth * 2, frameWidth * 2, null);
+      g2d.drawImage(frames[frame], 0, 0, frameWidth * 2, frameHeight * 2, null);
 
       // restore the original transform
       g2d.setTransform(originalTransform);
     } else {
       // draw normally
-      g2d.drawImage(frames[frame], x, y, frameWidth * 2, frameWidth * 2, null);
+      g2d.drawImage(frames[frame], x, y, frameWidth * 2, frameHeight * 2, null);
     }
   }
 
@@ -76,6 +79,14 @@ public class Animation {
 
   public void paintTo(Graphics g, Vertex pos) {
     this.paintTo(g, (int) pos.x, (int) pos.y);
+  }
+
+  public int frameWidth() {
+    return frameWidth;
+  }
+
+  public int frameHeight() {
+    return frameHeight;
   }
 
 }

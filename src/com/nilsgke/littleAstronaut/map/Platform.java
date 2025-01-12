@@ -31,8 +31,8 @@ public final class Platform implements GameObj {
   }
 
   // platform with tile image
-  public Platform(int x, int y, double height, double width, ImageTileset tileset) {
-    this(new Vertex(x, y), new Vertex(0, 0), height, width, tileset);
+  public Platform(int x, int y, double width, double height, ImageTileset tileset) {
+    this(new Vertex(x, y), new Vertex(0, 0), width, height, tileset);
   }
 
   public Platform(int x, int y, double width, double height) {

@@ -64,8 +64,6 @@ public class Player implements GameObj {
       return;
     }
 
-    System.out.println("lastDirection = " + lastDirection);
-
     if (velocity.y != 0) { // jumping
       boolean goingLeft = this.velocity.x < 0;
       if (velocity.y > .5) animation_jump.paintFrameTo(1, g, (int) this.pos().x, (int) this.pos().y - 10, goingLeft); // going up

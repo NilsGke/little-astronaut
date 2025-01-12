@@ -1,5 +1,7 @@
 package com.nilsgke.littleAstronaut.minigames;
 
+import com.nilsgke.littleAstronaut.sprites.Animation;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;

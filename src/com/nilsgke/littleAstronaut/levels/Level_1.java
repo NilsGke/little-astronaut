@@ -22,6 +22,11 @@ public class Level_1 extends Level {
           "assets/level1/grass-end-right.png"
   );
 
+  static ImageTileset defaultPlatformTileset = new ImageTileset(
+          "assets/platforms/normal/normal.png",
+          "assets/platforms/normal/end-left.png",
+          "assets/platforms/normal/end-right.png"
+  );
 
   public int minCamY() {
     return 500;
@@ -30,13 +35,14 @@ public class Level_1 extends Level {
   public Level_1() {
     super(
             new Platform[]{
-                    new Platform(-600, 700, 1900, 100, grassTileset),
-                    new Platform(1500 - 200, 690, 1300, 110, grassTileset),
-                    new Platform(2300, 600, 1600, 200, grassTileset),
+                    Platform.createHorizontalTilePlatform(-600, 700, 60, grassTileset),
+                    Platform.createHorizontalTilePlatform(1500 - 200, 690, 30, grassTileset),
+                    Platform.createHorizontalTilePlatform(2300, 600, 60, grassTileset),
+                    Platform.createHorizontalTilePlatform(1200, 500, 2, defaultPlatformTileset)
             },
             new TicTacToe(),
             new Vertex(0, 700),
-            new Vertex(3750, 465)
+            new Vertex(3900, 465)
     );
   }
 
@@ -46,13 +52,13 @@ public class Level_1 extends Level {
     Text.paintTo(g, "verschiedene Planeten zu erkunden.", -400, 400, 3);
     Text.paintTo(g, "Laufe mit a und d oder den Pfeiltasten ->", -350, 500, 2);
 
-    Text.paintTo(g, "Einen Sprung musst du Aufladen", 700, 400, 3);
-    Text.paintTo(g, "Je länger du die Leertaste drückst,", 770, 430, 2);
-    Text.paintTo(g, "desto höher springst du", 770, 430, 2);
+    Text.paintTo(g, "Drücke zum Springen die Leertaste", 700, 400, 3);
+    Text.paintTo(g, "Um in eine Richtung zu springen, musst du die ", 770, 440, 2);
+    Text.paintTo(g, "Richtung (a,d) beim loslassen der Leertaste gedrückt halten", 650, 470, 2);
     
 
-    Text.paintTo(g, "Halte die Leertaste gedrückt", 1750, 400, 3);
-    Text.paintTo(g, "um höher zu springen", 1850, 430, 3);
+    Text.paintTo(g, "Um höher zu springen musst du", 1750, 400, 3);
+    Text.paintTo(g, "die Leertaste länger drücken", 1750, 430, 3);
 
     Text.paintTo(g, "Am Ende jedes Levels musst du", 3000, 300, 3);
     Text.paintTo(g, "ein kleines Minispiel gewinnen", 2980, 330, 3);

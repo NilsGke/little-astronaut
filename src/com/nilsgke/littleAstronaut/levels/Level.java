@@ -74,7 +74,7 @@ public abstract class Level {
         minigameStatus = Status.STARTED;
         minigame.play();
       }
-    }, 10000);
+    }, 3000);
   }
 
   public void paintRocket(Graphics g) {

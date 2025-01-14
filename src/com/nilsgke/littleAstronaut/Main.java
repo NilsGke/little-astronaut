@@ -17,10 +17,10 @@ enum Controls {
 }
 
 public class Main implements Game {
-  static final int PLAYER_SPEED = 4;
+  static final int PLAYER_SPEED = 10;
   static final double GRAVITY = 1.5;
   static final double MIN_JUMP = 6;
-  static final double MAX_JUMP = 12;
+  static final double MAX_JUMP = 15;
 
   static final double CAM_MARGIN_PERCENTAGE = 0.4;
 
@@ -32,7 +32,7 @@ public class Main implements Game {
   private Level currentLevel;
   private int currentLevelIndex = 1;
 
-  private final boolean DEBUG_MODE = false;
+  private boolean DEBUG_MODE = false;
 
   //GameMap gameMap;
   Camera camera;
@@ -84,29 +84,18 @@ public class Main implements Game {
 
   @Override
   public void paintTo(Graphics g) {
+    g.setColor(new Color(0,100, 255));
     g.setColor(Color.CYAN);
     g.fillRect(0, 0, width(), height());
 
     // minigame overlay
     if (this.currentLevel.minigameStatus == Level.Status.STARTED) {
       g.setColor(Color.DARK_GRAY);
-      g.fillRoundRect(width / 3, height / 3, Math.max(width / 3, 150), Math.max(height / 3, 100), 20, 20);
+      g.fillRoundRect(0, 0, Math.max(width / 3, 150), Math.max(height / 3, 100), 20, 20);
       g.setColor(Color.WHITE);
       g.setFont(new Font("Arial", Font.BOLD, 30));
       g.drawString("Minigame Running", width / 2 - 150, height / 2);
       return;
-    }
-
-
-    if (DEBUG_MODE) {
-      // draw camera margin
-      g.setColor(Color.BLACK);
-      int camMarginTop = (int) (height() * CAM_MARGIN_PERCENTAGE);
-      int camMarginLeft = (int) (width() * CAM_MARGIN_PERCENTAGE);
-      g.drawLine(0, camMarginTop, width(), camMarginTop);
-      g.drawLine(0, height() - camMarginTop, width(), height() - camMarginTop);
-      g.drawLine(camMarginLeft, 0, camMarginLeft, height());
-      g.drawLine(width() - camMarginLeft, 0, width() - camMarginLeft, height());
     }
 
 
@@ -120,19 +109,31 @@ public class Main implements Game {
       platform.paintTo(g);
 
 
-    player().paintTo(g);
     g.setColor(Color.BLUE);
     g.drawRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) player.width(), 5);
     g.fillRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) ((player.width() / MAX_JUMP) * Math.min(jumpValue, MAX_JUMP)), 5);
 
-    currentLevel.paintRocket(g);
-
     currentLevel.additionalPaint(g);
 
+    player().paintTo(g);
 
-    // paint completed zone
-    g.setColor(Color.MAGENTA);
-    g.drawRect((int) currentLevel.completeZone.pos().x, (int) currentLevel.completeZone.pos().y, (int) currentLevel.completeZone.width(), (int) currentLevel.completeZone.height());
+    currentLevel.paintRocket(g);
+
+
+    if (DEBUG_MODE) {
+      // draw camera margin
+      g.setColor(Color.BLACK);
+      int camMarginTop = (int) (height() * CAM_MARGIN_PERCENTAGE);
+      int camMarginLeft = (int) (width() * CAM_MARGIN_PERCENTAGE);
+      g.drawLine(0, camMarginTop, width(), camMarginTop);
+      g.drawLine(0, height() - camMarginTop, width(), height() - camMarginTop);
+      g.drawLine(camMarginLeft, 0, camMarginLeft, height());
+      g.drawLine(width() - camMarginLeft, 0, width() - camMarginLeft, height());
+
+      // paint completed zone
+      g.setColor(Color.MAGENTA);
+      g.drawRect((int) currentLevel.completeZone.pos().x, (int) currentLevel.completeZone.pos().y, (int) currentLevel.completeZone.width(), (int) currentLevel.completeZone.height());
+    }
 
 
   }
@@ -183,32 +184,8 @@ public class Main implements Game {
 
     // collision
     for (var platform : currentLevel.platforms) {
-      if (!player.isAbove(platform) && !player.isUnderneath(platform) && !player.isLeftOf(platform) && !player.isRightOf(platform)) {
-        // player is touching a platform
-
-        double overlapTop = player.pos().y + player.height() - platform.pos().y;
-        double overlapBottom = platform.pos().y + platform.height() - player.pos().y;
-        double overlapLeft = player.pos().x + player.width() - platform.pos().x;
-        double overlapRight = platform.pos().x + platform.width() - player.pos().x;
-        double minOverlap = Math.min(Math.min(overlapTop, overlapBottom), Math.min(overlapLeft, overlapRight));
-
-        if (minOverlap == overlapTop) { // touching top (on ground)
-          player.velocity().y = 0;
-          player.pos().y = platform.pos().y - player.height();
-          onGround = true;
-        } else if (minOverlap == overlapBottom) { // touching bottom
-          player.pos().y = platform.pos().y + platform.height();
-          player.velocity().y = Math.abs(player.velocity().y);
-
-        } else if (minOverlap == overlapLeft) { // touching left
-          player.pos().x = platform.pos().x - player.width();
-          if (player.velocity().y != 0)
-            player.velocity().x = Math.abs(player.velocity().x) * -1; // if not on ground, bounce on wall
-        } else if (minOverlap == overlapRight) { // touching right
-          player.pos().x = platform.pos().x + platform.width();
-          if (player.velocity().y != 0) player.velocity().x = Math.abs(player.velocity().x);
-        }
-      }
+      if (platform.stoodOnBy(player)) onGround = true;
+      platform.applyCollision(player);
     }
 
 
@@ -287,6 +264,7 @@ public class Main implements Game {
   public void keyPressedReaction(KeyEvent keyEvent) {
     int key = keyEvent.getKeyCode();
     if (pressedKeys.contains(key)) return;
+    if(key == KeyEvent.VK_I) DEBUG_MODE = !DEBUG_MODE;
     pressedKeys.add(key);
   }
 

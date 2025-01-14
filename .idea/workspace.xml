@@ -4,17 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="224c5fd5-fbcd-42ac-abdf-7968df050a02" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/sprites/Text.java" afterDir="false" />
+    <list default="true" id="224c5fd5-fbcd-42ac-abdf-7968df050a02" name="Changes" comment="improve text rendering (caching), rocket animation and added arrow keys">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/rocket/rocket-enter-animation.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/rocket/rocket-enter-animation.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/Player.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_1.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/map/Platform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/map/Platform.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/minigames/Minigame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/minigames/Minigame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/sprites/Animation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/sprites/Animation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/sprites/ImageHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/sprites/ImageHelper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/name/panitz/game2d/corona/Corona.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/name/panitz/game2d/corona/Corona.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -33,10 +29,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;NilsGke&quot;
-  }
+  &quot;lastFilter&quot;: {}
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
@@ -118,10 +111,28 @@
       <workItem from="1736538391313" duration="626000" />
       <workItem from="1736631660263" duration="8000" />
       <workItem from="1736634454702" duration="6498000" />
+      <workItem from="1736641247977" duration="171000" />
+      <workItem from="1736756550747" duration="12705000" />
+      <workItem from="1736777380359" duration="455000" />
+      <workItem from="1736786668054" duration="9000" />
+      <workItem from="1736845017947" duration="305000" />
     </task>
+    <task id="LOCAL-00001" summary="improve text rendering (caching), rocket animation and added arrow keys">
+      <option name="closed" value="true" />
+      <created>1736641391262</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1736641391262</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="improve text rendering (caching), rocket animation and added arrow keys" />
+    <option name="LAST_COMMIT_MESSAGE" value="improve text rendering (caching), rocket animation and added arrow keys" />
   </component>
 </project>

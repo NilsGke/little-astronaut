@@ -6,12 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="224c5fd5-fbcd-42ac-abdf-7968df050a02" name="Changes" comment="improve text rendering (caching), rocket animation and added arrow keys">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/rocket/rocket-enter-animation.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/rocket/rocket-enter-animation.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_1.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/map/Platform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/map/Platform.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/name/panitz/game2d/corona/Corona.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/name/panitz/game2d/corona/Corona.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/map/Editor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/map/Editor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/minigames/MiniSwingScreen.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/minigames/Minigame.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/minigames/TicTacToe.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,6 +118,9 @@
       <workItem from="1736777380359" duration="455000" />
       <workItem from="1736786668054" duration="9000" />
       <workItem from="1736845017947" duration="305000" />
+      <workItem from="1736851198250" duration="4334000" />
+      <workItem from="1737060201296" duration="849000" />
+      <workItem from="1737063004661" duration="66000" />
     </task>
     <task id="LOCAL-00001" summary="improve text rendering (caching), rocket animation and added arrow keys">
       <option name="closed" value="true" />

@@ -118,9 +118,6 @@ public class Editor extends JFrame {
     code.deleteCharAt(code.length() - 2);
     code.append("},\n");
 
-    // minigame
-    code.append("new TicTacToe(),\n");
-
     // start position
     if (startPosition != null)
       code.append("new Vertex(").append((int) startPosition.x).append(", ").append((int) startPosition.y).append("),\n");

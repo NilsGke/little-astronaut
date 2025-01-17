@@ -84,20 +84,9 @@ public class Main implements Game {
 
   @Override
   public void paintTo(Graphics g) {
-    g.setColor(new Color(0,100, 255));
+    g.setColor(new Color(0, 100, 255));
     g.setColor(Color.CYAN);
     g.fillRect(0, 0, width(), height());
-
-    // minigame overlay
-    if (this.currentLevel.minigameStatus == Level.Status.STARTED) {
-      g.setColor(Color.DARK_GRAY);
-      g.fillRoundRect(0, 0, Math.max(width / 3, 150), Math.max(height / 3, 100), 20, 20);
-      g.setColor(Color.WHITE);
-      g.setFont(new Font("Arial", Font.BOLD, 30));
-      g.drawString("Minigame Running", width / 2 - 150, height / 2);
-      return;
-    }
-
 
     g.translate(-(int) (camera.pos().x - width() / 2.0), -(int) (camera.pos().y - height() / 2.0));
 
@@ -115,7 +104,7 @@ public class Main implements Game {
 
     currentLevel.additionalPaint(g);
 
-    player().paintTo(g);
+    if(!currentLevel.finished) player().paintTo(g);
 
     currentLevel.paintRocket(g);
 
@@ -130,7 +119,7 @@ public class Main implements Game {
       g.drawLine(camMarginLeft, 0, camMarginLeft, height());
       g.drawLine(width() - camMarginLeft, 0, width() - camMarginLeft, height());
 
-      // paint completed zone
+      // paint finished zone
       g.setColor(Color.MAGENTA);
       g.drawRect((int) currentLevel.completeZone.pos().x, (int) currentLevel.completeZone.pos().y, (int) currentLevel.completeZone.width(), (int) currentLevel.completeZone.height());
     }
@@ -145,8 +134,11 @@ public class Main implements Game {
     // gravity
     playerVelocity.y += GRAVITY * (deltaTime / 50.0);
 
-    // handle minigame stuff
-    if (currentLevel.minigameStatus != Level.Status.NOT_STARTED) {
+    currentLevel.checkIfInCompletionZone(player);
+
+
+    // level end stuff
+    if (currentLevel.finishAnimation) {
       var centerOfRocket = new Vertex((int) (this.currentLevel.completeZone.pos().x + (this.currentLevel.completeZone.width() / 2)), (int) (this.currentLevel.completeZone.pos().y + (this.currentLevel.completeZone.height() / 2)));
 
       if (player.pos().x != centerOfRocket.x || player.pos().y != centerOfRocket.y) {
@@ -156,18 +148,14 @@ public class Main implements Game {
 
         this.player.velocity.moveTo(vectorToRocket);
       }
-
-      if (currentLevel.minigame.ended()) {
-        if (currentLevel.minigame.lost()) this.loadLevel(currentLevelIndex); // redo current level if lost
-        else this.loadLevel(currentLevelIndex + 1); // next level if won
-      }
     }
 
-    var startedMinigame = currentLevel.checkIfInCompletionZone(player);
-    if (startedMinigame) {
-      this.player.velocity().moveTo(new Vertex(0, 0));
-      return;
+    if(currentLevel.finished) {
+      currentLevel.completeZone.pos().add(new Vertex(0, -10));
+      player.pos().moveTo(currentLevel.completeZone.pos());
+      player.pos().add(new Vertex(10,10)); // offset so that player is not at top left corner of rocket
     }
+
 
     // reset level if player is below 10000
     if (player.pos().y > 1000) {
@@ -190,7 +178,7 @@ public class Main implements Game {
 
 
     // walking
-    if (currentLevel.minigameStatus == Level.Status.NOT_STARTED && (controls == Controls.JETPACK || (onGround && jumpValue == 0))) {
+    if (!currentLevel.finished && (controls == Controls.JETPACK || (onGround && jumpValue == 0))) {
       // slowly increasing the velocity in the direction the user is holidng but cap max speed
       if (pressedKeys.contains(KeyEvent.VK_D) || pressedKeys.contains(KeyEvent.VK_RIGHT))
         playerVelocity.x += PLAYER_SPEED * deltaTime / 70.0;
@@ -264,7 +252,7 @@ public class Main implements Game {
   public void keyPressedReaction(KeyEvent keyEvent) {
     int key = keyEvent.getKeyCode();
     if (pressedKeys.contains(key)) return;
-    if(key == KeyEvent.VK_I) DEBUG_MODE = !DEBUG_MODE;
+    if (key == KeyEvent.VK_I) DEBUG_MODE = !DEBUG_MODE;
     pressedKeys.add(key);
   }
 
@@ -276,7 +264,7 @@ public class Main implements Game {
     if (konami_sequence[konami_pressed] == keyEvent.getKeyCode()) konami_pressed++;
     else konami_pressed = 0;
     if (konami_pressed == konami_sequence.length) {
-      // sequence completed
+      // sequence finished
       konami_pressed = 0;
       controls = controls == Controls.JETPACK ? Controls.JUMP_KING : Controls.JETPACK;
     }

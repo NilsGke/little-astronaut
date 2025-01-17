@@ -2,15 +2,10 @@ package com.nilsgke.littleAstronaut.levels;
 
 import com.nilsgke.littleAstronaut.sprites.ImageTileset;
 import com.nilsgke.littleAstronaut.map.Platform;
-import com.nilsgke.littleAstronaut.minigames.TicTacToe;
 import com.nilsgke.littleAstronaut.sprites.Text;
 import name.panitz.game2d.Vertex;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /// **Earth**. <br>
 /// In this level, the player will learn the basic controls and know how the game works. <br>
@@ -40,7 +35,6 @@ public class Level_1 extends Level {
                     Platform.createHorizontalTilePlatform(2300, 600, 60, grassTileset),
                     Platform.createHorizontalTilePlatform(1200, 500, 2, defaultPlatformTileset)
             },
-            new TicTacToe(),
             new Vertex(0, 700),
             new Vertex(3900, 465)
     );
@@ -60,9 +54,8 @@ public class Level_1 extends Level {
     Text.paintTo(g, "Um höher zu springen musst du", 1750, 400, 3);
     Text.paintTo(g, "die Leertaste länger drücken", 1750, 430, 3);
 
-    Text.paintTo(g, "Am Ende jedes Levels musst du", 3000, 300, 3);
-    Text.paintTo(g, "ein kleines Minispiel gewinnen", 2980, 330, 3);
-    Text.paintTo(g, "um weiter zu kommen", 3110, 360, 3);
+    Text.paintTo(g, "Du hast das Level geschafft,", 3000, 300, 3);
+    Text.paintTo(g, "wenn du bei der Rakete angekommen bist.", 2900, 330, 3);
 
   }
 }

@@ -43,7 +43,13 @@ public class Platform implements GameObj {
 
 
   public static Platform createHorizontalTilePlatform(int x, int y, int tileRepeat, ImageTileset tileset) {
-    return new Platform(x, y, tileset.leftEnd.getWidth() + tileset.rightEnd.getWidth() + tileset.tile.getWidth() * tileRepeat, tileset.tile.getHeight(), tileset);
+    return new Platform(
+            x,
+            y,
+            tileset.leftEnd.getWidth() * 2 + tileset.rightEnd.getWidth() * 2 + tileset.tile.getWidth() * 2 * tileRepeat,
+            tileset.tile.getHeight() * 2,
+            tileset
+    );
   }
 
   public void paintTo(Graphics g) {
@@ -53,19 +59,46 @@ public class Platform implements GameObj {
       return;
     }
 
-    int tileWidth = this.tileset.tile.getWidth();
 
-    int imgRepeatCount = (int) ((this.width - (this.tileset.leftEnd.getWidth() + this.tileset.rightEnd.getWidth())) / tileWidth);
+    int imgRepeatCount = (int) ((this.width - (this.tileset.leftEnd.getWidth() * 2 + this.tileset.rightEnd.getWidth() * 2)) / (tileset.tile.getWidth() * 2));
 
-    int leftOffset = tileset.leftEnd.getWidth();
+    int leftOffset = tileset.leftEnd.getWidth() * 2;
 
-    // left end
-    g.drawImage(tileset.leftEnd, (int) this.pos().x, (int) this.pos().y, tileset.leftEnd.getWidth() * 2, tileset.leftEnd.getHeight() * 2, null);
-    // main tile
+    g.drawImage(
+            tileset.leftEnd,
+            (int) this.pos().x,
+            (int) this.pos.y,
+            tileset.leftEnd.getWidth() * 2,
+            tileset.leftEnd.getHeight() * 2,
+            null
+    );
+
     for (int i = 0; i < imgRepeatCount; i++)
-      g.drawImage(tileset.tile, (int) (this.pos().x + leftOffset + i * tileWidth), (int) this.pos().y, tileset.tile.getWidth() * 2, tileset.tile.getHeight() * 2, null);
-    // right end
-    g.drawImage(tileset.rightEnd, (int) pos.x + leftOffset + tileWidth * (imgRepeatCount + 1), (int) pos.y, tileset.rightEnd.getWidth() * 2, tileset.rightEnd.getHeight() * 2, null);
+      g.drawImage(
+              this.tileset.tile,
+              (int) this.pos().x + leftOffset + (tileset.tile.getWidth() * 2) * i,
+              (int) this.pos().y,
+              this.tileset.tile.getWidth() * 2,
+              this.tileset.tile.getHeight() * 2,
+              null
+      );
+
+    g.drawImage(
+            tileset.rightEnd,
+            (int) this.pos().x + leftOffset + tileset.tile.getWidth() * 2 * imgRepeatCount,
+            (int) this.pos().y,
+            this.tileset.rightEnd.getWidth() * 2,
+            this.tileset.rightEnd.getHeight() * 2,
+            null
+    );
+
+//    // left end
+//    g.drawImage(tileset.leftEnd, (int) this.pos().x, (int) this.pos().y, leftOffset, tileset.leftEnd.getHeight() * 2, null);
+//    // main tile
+//    for (int i = 0; i < imgRepeatCount; i++)
+//      g.drawImage(tileset.tile, (int) (this.pos().x + leftOffset + i * tileWidth), (int) this.pos().y, tileset.tile.getWidth() * 2, tileset.tile.getHeight() * 2, null);
+//    // right end
+//    g.drawImage(tileset.rightEnd, (int) pos.x + leftOffset + tileWidth * (imgRepeatCount + 1), (int) pos.y, tileset.rightEnd.getWidth() * 2, tileset.rightEnd.getHeight() * 2, null);
 
   }
 

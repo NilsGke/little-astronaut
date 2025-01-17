@@ -1,8 +1,7 @@
 package com.nilsgke.littleAstronaut;
 
 
-import com.nilsgke.littleAstronaut.levels.Level;
-import com.nilsgke.littleAstronaut.levels.Level_1;
+import com.nilsgke.littleAstronaut.levels.*;
 import name.panitz.game2d.Game;
 import name.panitz.game2d.GameObj;
 import name.panitz.game2d.Vertex;
@@ -17,7 +16,7 @@ enum Controls {
 }
 
 public class Main implements Game {
-  static final int PLAYER_SPEED = 10;
+  static final int PLAYER_SPEED = 4;
   static final double GRAVITY = 1.5;
   static final double MIN_JUMP = 6;
   static final double MAX_JUMP = 15;
@@ -30,7 +29,8 @@ public class Main implements Game {
   private int height;
 
   private Level currentLevel;
-  private int currentLevelIndex = 1;
+  private int currentLevelIndex = 4;
+  private boolean gameFinished = false;
 
   private boolean DEBUG_MODE = false;
 
@@ -58,34 +58,35 @@ public class Main implements Game {
     this.camera = new Camera(new Vertex(player.pos().x, player.pos().y));
     this.gameObjects = new ArrayList<>();
 
-    loadLevel(1);
+    loadLevel(currentLevelIndex);
   }
 
   private void loadLevel(int levelNumber) {
+    currentLevelIndex = levelNumber;
     System.out.printf("Loading level %d", levelNumber);
 
     Level newLevel = switch (levelNumber) {
       case 1 -> new Level_1();
-//      case 2 -> new Level_2();
-//      case 3 -> new Level_3();
+      case 2 -> new Level_2();
+      case 3 -> new Level_3();
       default -> null;
     };
 
-    if (newLevel == null) {
-      System.out.println("COMPLETED!");
-      return;
+    if(newLevel == null) {
+      gameFinished = true;
+      newLevel = new FinishLevel();
     }
 
     this.pressedKeys.clear();
     this.currentLevel = newLevel;
     player.pos().moveTo(this.currentLevel.startPos);
+    camera.pos().moveTo(this.currentLevel.startPos);
     player.velocity().moveTo(new Vertex(0, 0));
   }
 
   @Override
   public void paintTo(Graphics g) {
-    g.setColor(new Color(0, 100, 255));
-    g.setColor(Color.CYAN);
+    g.setColor(currentLevel.backgroundColor());
     g.fillRect(0, 0, width(), height());
 
     g.translate(-(int) (camera.pos().x - width() / 2.0), -(int) (camera.pos().y - height() / 2.0));
@@ -97,14 +98,11 @@ public class Main implements Game {
     for (var platform : currentLevel.platforms)
       platform.paintTo(g);
 
-
-    g.setColor(Color.BLUE);
-    g.drawRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) player.width(), 5);
-    g.fillRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) ((player.width() / MAX_JUMP) * Math.min(jumpValue, MAX_JUMP)), 5);
+    currentLevel.paintPlanetSign(g);
 
     currentLevel.additionalPaint(g);
 
-    if(!currentLevel.finished) player().paintTo(g);
+    if (!currentLevel.finished && (currentLevel.animationState != Level.AnimationState.FLYING)) player().paintTo(g);
 
     currentLevel.paintRocket(g);
 
@@ -118,6 +116,12 @@ public class Main implements Game {
       g.drawLine(0, height() - camMarginTop, width(), height() - camMarginTop);
       g.drawLine(camMarginLeft, 0, camMarginLeft, height());
       g.drawLine(width() - camMarginLeft, 0, width() - camMarginLeft, height());
+
+      // jump state bar
+      g.setColor(Color.BLUE);
+      g.drawRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) player.width(), 5);
+      g.fillRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) ((player.width() / MAX_JUMP) * Math.min(jumpValue, MAX_JUMP)), 5);
+
 
       // paint finished zone
       g.setColor(Color.MAGENTA);
@@ -139,21 +143,31 @@ public class Main implements Game {
 
     // level end stuff
     if (currentLevel.finishAnimation) {
-      var centerOfRocket = new Vertex((int) (this.currentLevel.completeZone.pos().x + (this.currentLevel.completeZone.width() / 2)), (int) (this.currentLevel.completeZone.pos().y + (this.currentLevel.completeZone.height() / 2)));
+      switch (currentLevel.animationState) {
+        case Level.AnimationState.NOT_STARTED -> {
 
-      if (player.pos().x != centerOfRocket.x || player.pos().y != centerOfRocket.y) {
-        var vectorToRocket = new Vertex((int) (centerOfRocket.x - (this.player.pos.x + this.player.width / 2)) * .1, // center player on rocket
-                player.velocity.y != 0 ? player.velocity.y : (int) (centerOfRocket.y + this.currentLevel.completeZone.height() / 2 - this.player.pos.y - this.player.height) * .1 // get player on bottom of rocket
-        );
+        }
+        case Level.AnimationState.STARTING -> {
 
-        this.player.velocity.moveTo(vectorToRocket);
+          // move player horizontally to rocket
+          this.player.pos.add(new Vertex(
+                  ((this.player.pos.x + this.player.width / 2) - (this.currentLevel.completeZone.pos().x + this.currentLevel.completeZone.width() / 2)) * -0.1,
+                  0
+          ));
+
+        }
+        case Level.AnimationState.FLYING -> {
+          currentLevel.completeZone.velocity().add(new Vertex(0, -0.2));
+          currentLevel.completeZone.pos().add(currentLevel.completeZone.velocity());
+          player.pos().moveTo(currentLevel.completeZone.pos());
+          player.pos().add(new Vertex(10, 10)); // offset so that player is not at top left corner of rocket
+          return; // prevent camera updates
+        }
+        case Level.AnimationState.DONE -> {
+          loadLevel(currentLevelIndex + 1);
+          return;
+        }
       }
-    }
-
-    if(currentLevel.finished) {
-      currentLevel.completeZone.pos().add(new Vertex(0, -10));
-      player.pos().moveTo(currentLevel.completeZone.pos());
-      player.pos().add(new Vertex(10,10)); // offset so that player is not at top left corner of rocket
     }
 
 
@@ -178,7 +192,7 @@ public class Main implements Game {
 
 
     // walking
-    if (!currentLevel.finished && (controls == Controls.JETPACK || (onGround && jumpValue == 0))) {
+    if (!currentLevel.finished && !currentLevel.finishAnimation && (controls == Controls.JETPACK || (onGround && jumpValue == 0))) {
       // slowly increasing the velocity in the direction the user is holidng but cap max speed
       if (pressedKeys.contains(KeyEvent.VK_D) || pressedKeys.contains(KeyEvent.VK_RIGHT))
         playerVelocity.x += PLAYER_SPEED * deltaTime / 70.0;
@@ -197,7 +211,7 @@ public class Main implements Game {
       jumpValue += PLAYER_SPEED * deltaTime / 100.0;
 
     // jump jump-king
-    if (onGround && canJump && jumpValue > 0 && controls == Controls.JUMP_KING && !pressedKeys.contains(KeyEvent.VK_SPACE)) {
+    if (!currentLevel.finishAnimation && onGround && canJump && jumpValue > 0 && controls == Controls.JUMP_KING && !pressedKeys.contains(KeyEvent.VK_SPACE)) {
       player.velocity().y = -Math.max(Math.min(jumpValue, MAX_JUMP), MIN_JUMP);
 
       if (pressedKeys.contains(KeyEvent.VK_A) || pressedKeys.contains(KeyEvent.VK_LEFT))
@@ -241,8 +255,8 @@ public class Main implements Game {
       camera.acceleration().y += (camYDistanceToPlayer - (Math.signum(camYDistanceToPlayer) * yMarginFromCenter)) * deltaTime / 14.0;
     else camera.velocity().y *= 0.5; // prevents hitting ground camera bounce to bottom and back
 
-
-    camera.update(deltaTime);
+    if(!gameFinished)
+      camera.update(deltaTime);
 
     if (camera.pos().y > currentLevel.minCamY())
       camera.pos().moveTo(new Vertex(camera.pos().x, currentLevel.minCamY()));

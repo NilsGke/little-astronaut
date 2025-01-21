@@ -33,6 +33,8 @@ public class FinishLevel extends Level {
                     Platform.createHorizontalTilePlatform(-500, -60, 2, Tilesets.defaultPlatform),
                     Platform.createHorizontalTilePlatform(244, -30, 3, Tilesets.stonePlatform),
                     Platform.createHorizontalTilePlatform(336, -60, 2, Tilesets.defaultPlatform),
+                    new Platform(-550, -1000, 50, 1000),
+                    new Platform(500, -1000, 50, 1000),
             },
             new Vertex(0, 65),
             new Vertex(0, 1000),

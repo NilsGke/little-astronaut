@@ -20,6 +20,7 @@ public abstract class Level {
 
 
   public enum AnimationState {NOT_STARTED, STARTING, FLYING, DONE}
+
   public Vertex startPos;
   public Platform[] platforms;
   public Platform completeZone;
@@ -29,7 +30,7 @@ public abstract class Level {
   public Boolean finished = false;
   private final Vertex planetSignPos;
   private final Animation planetAnimation;
-
+  private short blackScreenOpacity = 0;
 
   private static final BufferedImage rocketImage;
   private static final BufferedImage planetSign;
@@ -66,6 +67,17 @@ public abstract class Level {
     this.planetSignPos = planetSignPos;
     this.planetAnimation = planetAnimation;
     this.completeZone = new Platform((int) rocketPos.x + 30, (int) rocketPos.y, 50.0, 100.0);
+
+    this.blackScreenOpacity = 255;
+    Timer timer = new Timer();
+    TimerTask task = new TimerTask() {
+      @Override
+      public void run() {
+        if(blackScreenOpacity > 0) blackScreenOpacity--;
+        else timer.cancel();
+      }
+    };
+    timer.schedule(task, 0, 1000/255);
   }
 
   public void checkIfInCompletionZone(Player player) {
@@ -80,6 +92,7 @@ public abstract class Level {
     this.finishAnimation = true;
     animationState = AnimationState.STARTING;
 
+    // fade in blackscreen
     Timer timer = new Timer();
     TimerTask t1 = new TimerTask() {
       public void run() {
@@ -89,11 +102,23 @@ public abstract class Level {
     TimerTask t2 = new TimerTask() {
       public void run() {
         animationState = AnimationState.DONE;
+        timer.cancel();
+      }
+    };
+
+    TimerTask updateBlackScreen = new TimerTask() {
+      @Override
+      public void run() {
+        if (blackScreenOpacity < 255) blackScreenOpacity++;
       }
     };
 
     timer.schedule(t1, 1000);
     timer.schedule(t2, 3000);
+
+    // blackScreen
+    blackScreenOpacity = 0;
+    timer.schedule(updateBlackScreen, 2000, 1000 / 255);
 
   }
 
@@ -115,6 +140,11 @@ public abstract class Level {
   public static void paintPlanetSign(Graphics g, Vertex planetSignPos, Animation planetAnimation) {
     g.drawImage(planetSign, (int) planetSignPos.x, (int) planetSignPos.y, null);
     planetAnimation.paintTo(g, (int) (planetSignPos.x + ((double) planetSign.getWidth() / 2) - ((double) planetAnimation.frameWidth())), (int) planetSignPos.y + 45);
+  }
+
+  public void paintBlackScreen(Graphics g, int x, int y, int width, int height) {
+    g.setColor(new Color(0, 0, 0, blackScreenOpacity));
+    g.fillRect(0,0, width, height);
   }
 
   abstract public void additionalPaint(Graphics g);

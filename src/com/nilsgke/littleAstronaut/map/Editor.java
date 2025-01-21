@@ -130,8 +130,6 @@ public class Editor extends JFrame {
     } else {
       code.append("new Platform(0, 0, 0, 0)\n");  // default
     }
-
-    System.out.println(code);
   }
 
   private void addPlatform() {

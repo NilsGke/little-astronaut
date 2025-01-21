@@ -28,7 +28,6 @@ public class Animation {
     this.frameWidth = sprite.getWidth() / frameCount;
     this.frameHeight = sprite.getHeight();
     for (int i = 0; i < frameCount; i++) {
-      System.out.println(frameWidth * (i + 1));
       frames[i] = sprite.getSubimage(frameWidth * i, 0, frameWidth, frameHeight);
     }
 

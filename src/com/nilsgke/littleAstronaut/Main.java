@@ -29,10 +29,12 @@ public class Main implements Game {
   private int height;
 
   private Level currentLevel;
-  private int currentLevelIndex = 4;
+  private int currentLevelIndex = 1;
   private boolean gameFinished = false;
 
   private boolean DEBUG_MODE = false;
+
+  private boolean menuShown = true;
 
   //GameMap gameMap;
   Camera camera;
@@ -69,6 +71,7 @@ public class Main implements Game {
       case 1 -> new Level_1();
       case 2 -> new Level_2();
       case 3 -> new Level_3();
+      case 4 -> new Level_4();
       default -> null;
     };
 
@@ -89,7 +92,10 @@ public class Main implements Game {
     g.setColor(currentLevel.backgroundColor());
     g.fillRect(0, 0, width(), height());
 
-    g.translate(-(int) (camera.pos().x - width() / 2.0), -(int) (camera.pos().y - height() / 2.0));
+    int offsetX = -(int) (camera.pos().x - width() / 2.0);
+    int offsetY = -(int) (camera.pos().y - height() / 2.0);
+
+    g.translate(offsetX, offsetY);
 
     g.setColor(Color.WHITE);
     for (var gos : goss()) gos.forEach(go -> go.paintTo(g));
@@ -105,6 +111,10 @@ public class Main implements Game {
     if (!currentLevel.finished && (currentLevel.animationState != Level.AnimationState.FLYING)) player().paintTo(g);
 
     currentLevel.paintRocket(g);
+
+    g.translate(-offsetX, -offsetY);
+
+    currentLevel.paintBlackScreen(g, (int) camera.pos().x, (int) camera.pos().y, width, height);
 
 
     if (DEBUG_MODE) {

@@ -6,6 +6,7 @@ import name.panitz.game2d.GameObj;
 import name.panitz.game2d.Vertex;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Objects;
 
 public class Platform implements GameObj {
@@ -14,6 +15,7 @@ public class Platform implements GameObj {
   private double height;
   private double width;
   private ImageTileset tileset;
+  private BufferedImage image;
 
   private Platform(Vertex pos, Vertex velocity, double height, double width) {
     this.pos = pos;
@@ -29,6 +31,7 @@ public class Platform implements GameObj {
     this.height = height;
     this.width = width;
     this.tileset = tileset;
+    this.generateImage();
   }
 
   // platform with tile image
@@ -39,7 +42,6 @@ public class Platform implements GameObj {
   public Platform(int x, int y, double width, double height) {
     this(new Vertex(x, y), new Vertex(0, 0), height, width);
   }
-
 
 
   public static Platform createHorizontalTilePlatform(int x, int y, int tileRepeat, ImageTileset tileset) {
@@ -59,6 +61,13 @@ public class Platform implements GameObj {
       return;
     }
 
+    g.drawImage(image, (int)pos.x, (int)pos.y, null);
+
+  }
+
+  private void generateImage() {
+    image = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g = image.createGraphics();
 
     int imgRepeatCount = (int) ((this.width - (this.tileset.leftEnd.getWidth() * 2 + this.tileset.rightEnd.getWidth() * 2)) / (tileset.tile.getWidth() * 2));
 
@@ -66,8 +75,8 @@ public class Platform implements GameObj {
 
     g.drawImage(
             tileset.leftEnd,
-            (int) this.pos().x,
-            (int) this.pos.y,
+            0,
+            0,
             tileset.leftEnd.getWidth() * 2,
             tileset.leftEnd.getHeight() * 2,
             null
@@ -76,8 +85,8 @@ public class Platform implements GameObj {
     for (int i = 0; i < imgRepeatCount; i++)
       g.drawImage(
               this.tileset.tile,
-              (int) this.pos().x + leftOffset + (tileset.tile.getWidth() * 2) * i,
-              (int) this.pos().y,
+              leftOffset + (tileset.tile.getWidth() * 2) * i,
+              0,
               this.tileset.tile.getWidth() * 2,
               this.tileset.tile.getHeight() * 2,
               null
@@ -85,21 +94,12 @@ public class Platform implements GameObj {
 
     g.drawImage(
             tileset.rightEnd,
-            (int) this.pos().x + leftOffset + tileset.tile.getWidth() * 2 * imgRepeatCount,
-            (int) this.pos().y,
+            leftOffset + tileset.tile.getWidth() * 2 * imgRepeatCount,
+            0,
             this.tileset.rightEnd.getWidth() * 2,
             this.tileset.rightEnd.getHeight() * 2,
             null
     );
-
-//    // left end
-//    g.drawImage(tileset.leftEnd, (int) this.pos().x, (int) this.pos().y, leftOffset, tileset.leftEnd.getHeight() * 2, null);
-//    // main tile
-//    for (int i = 0; i < imgRepeatCount; i++)
-//      g.drawImage(tileset.tile, (int) (this.pos().x + leftOffset + i * tileWidth), (int) this.pos().y, tileset.tile.getWidth() * 2, tileset.tile.getHeight() * 2, null);
-//    // right end
-//    g.drawImage(tileset.rightEnd, (int) pos.x + leftOffset + tileWidth * (imgRepeatCount + 1), (int) pos.y, tileset.rightEnd.getWidth() * 2, tileset.rightEnd.getHeight() * 2, null);
-
   }
 
   public void move(double x, double y) {

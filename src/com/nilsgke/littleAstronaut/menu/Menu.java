@@ -2,7 +2,6 @@ package com.nilsgke.littleAstronaut.menu;
 
 import com.nilsgke.littleAstronaut.connection.WSClient;
 import com.nilsgke.littleAstronaut.sprites.Text;
-import com.nilsgke.littleAstronautServer.WSServer;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -23,7 +22,7 @@ public class Menu {
   private static BufferedImage startIcon;
   private static BufferedImage terminateIcon;
 
-  private WSServer wsServer;
+  private WSClient.WSServer wsServer;
   private WSClient wsClient;
 
   static {
@@ -35,7 +34,7 @@ public class Menu {
     }
   }
 
-  public Menu(int width, int height, WSClient client, WSServer server) {
+  public Menu(int width, int height, WSClient client, WSClient.WSServer server) {
     this.wsServer = server;
     this.wsClient = client;
 
@@ -58,7 +57,7 @@ public class Menu {
 
             // client connect button
             new Clickable(860, 627, startIcon.getWidth() * 2, startIcon.getHeight() * 2, () -> {
-              if (wsServer.getStatus() == WSServer.Status.RUNNING) return; // no action if user is hosting the server
+              if (wsServer.getStatus() == WSClient.WSServer.Status.RUNNING) return; // no action if user is hosting the server
 
               if(wsClient.getStatus() == WSClient.Status.CONNECTED) {
                 wsClient.disconnect();
@@ -121,7 +120,7 @@ public class Menu {
     Text.paintTo(g, "verbinde dich mit einem Server", 40, 640, 2);
 
     // server start button
-    if (wsServer.getStatus() == WSServer.Status.STOPPED)
+    if (wsServer.getStatus() == WSClient.WSServer.Status.STOPPED)
       g.drawImage(startIcon, 350, 587, startIcon.getWidth() * 2, startIcon.getHeight() * 2, null);
     else {
       g.drawImage(terminateIcon, 350, 587, startIcon.getWidth() * 2, startIcon.getHeight() * 2, null);

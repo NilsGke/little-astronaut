@@ -1,4 +1,4 @@
-package com.nilsgke.littleAstronautServer;
+package com.nilsgke.littleAstronaut.connection;
 
 import java.io.*;
 import java.net.*;

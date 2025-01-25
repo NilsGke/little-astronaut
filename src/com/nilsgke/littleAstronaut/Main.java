@@ -4,7 +4,6 @@ package com.nilsgke.littleAstronaut;
 import com.nilsgke.littleAstronaut.connection.WSClient;
 import com.nilsgke.littleAstronaut.levels.*;
 import com.nilsgke.littleAstronaut.menu.Menu;
-import com.nilsgke.littleAstronautServer.WSServer;
 import name.panitz.game2d.Game;
 import name.panitz.game2d.GameObj;
 import name.panitz.game2d.Vertex;
@@ -55,7 +54,7 @@ public class Main implements Game {
   int konami_pressed = 0;
   static final int[] konami_sequence = {38, 38, 40, 40, 37, 39, 37, 39, 66, 65}; // up, up, down, down, left, right, left, right, b, a
 
-  WSServer wsServer = null;
+  WSClient.WSServer wsServer = null;
   WSClient wsClient = null;
 
   public static void main(String[] args) throws Exception {
@@ -71,7 +70,7 @@ public class Main implements Game {
     this.gameObjects = new ArrayList<>();
 
     this.wsClient = new WSClient();
-    this.wsServer = new WSServer();
+    this.wsServer = new WSClient.WSServer();
 
     this.menu = new Menu(width, height, wsClient, wsServer);
     this.gameImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);

@@ -24,7 +24,9 @@ public interface Game {
   void keyPressedReaction(KeyEvent keyEvent);
 
   void keyReleasedReaction(KeyEvent keyEvent);
-  
+
+  void mousePressedReaction(MouseEvent mouseEvent);
+
   default void move(){
   	if (ended()) return;
     for (var gos:goss()) gos.forEach(GameObj::move);

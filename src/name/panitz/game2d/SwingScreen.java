@@ -12,7 +12,7 @@ public class SwingScreen extends JPanel{
 
 
     t = new Timer(13, (ev)->{
-        logic.move();
+        //logic.move();
         logic.doChecks(t.getDelay());
         repaint();
         getToolkit().sync();
@@ -24,11 +24,16 @@ public class SwingScreen extends JPanel{
         @Override public void keyPressed(KeyEvent e) {
           logic.keyPressedReaction(e);
         }
-
       @Override public void keyReleased(KeyEvent e) {
           logic.keyReleasedReaction(e);
         }
       });
+    addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        logic.mousePressedReaction(e);
+      }
+    });
     setFocusable(true);
     requestFocus();
     addComponentListener(new ComponentAdapter() {

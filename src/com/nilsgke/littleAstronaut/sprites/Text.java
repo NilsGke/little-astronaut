@@ -44,6 +44,14 @@ public class Text {
     paintTo(g, text, x, y, scale, Color.WHITE);
   }
 
+  public static int getHeight(int scale) {
+    return CHAR_HEIGHT * scale;
+  }
+
+  public static int getCharWidth(int scale) {
+    return CHAR_WIDTH * scale;
+  }
+
   // Static method to paint text at a specified position
   public static void paintTo(Graphics g, String text, int x, int y, int scale, Color color) {
     text = text.toLowerCase().replaceAll("ä", "ae").replaceAll("ö", "oe").replaceAll("ü", "ue");

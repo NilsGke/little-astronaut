@@ -4,20 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="224c5fd5-fbcd-42ac-abdf-7968df050a02" name="Changes" comment="improve text rendering (caching), rocket animation and added arrow keys">
-      <change afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/FinishLevel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_4.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/sprites/Tilesets.java" afterDir="false" />
+    <list default="true" id="224c5fd5-fbcd-42ac-abdf-7968df050a02" name="Changes" comment="only generate platform image once and reuse it, since they are not changing">
+      <change afterPath="$PROJECT_DIR$/assets/icons/Close.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/Play.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/connection/WSClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/menu/Clickable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/menu/InputBox.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/menu/Menu.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronautServer/WSServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/level1/grass-end-left.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/level1/grass-end-right.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/level1/grass-repeating.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_1.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/levels/Level_2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/map/Platform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/map/Platform.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/sprites/Text.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/nilsgke/littleAstronaut/sprites/Text.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/name/panitz/game2d/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/name/panitz/game2d/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/name/panitz/game2d/SwingScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/name/panitz/game2d/SwingScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/name/panitz/game2d/corona/Corona.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/name/panitz/game2d/corona/Corona.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/name/panitz/game2d/klaus/HeartsOfKlaus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/name/panitz/game2d/klaus/HeartsOfKlaus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/name/panitz/game2d/simple/SimpleGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/name/panitz/game2d/simple/SimpleGame.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,26 +53,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Corona.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Application.SimpleGame.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "reference.settings.project.statistic.project.settings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Corona.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.SimpleGame.executor&quot;: &quot;Run&quot;,
+    &quot;Application.WSClient.executor&quot;: &quot;Run&quot;,
+    &quot;Application.WSServer.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.statistic.project.settings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/assets/icons" />
+      <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/assets/planets" />
       <recent name="$PROJECT_DIR$/assets" />
     </key>
@@ -78,7 +84,7 @@
       <recent name="com.nilsgke.littleAstronaut.levels" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Main">
+  <component name="RunManager" selected="Application.WSServer">
     <configuration name="Corona" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="name.panitz.game2d.corona.Corona" />
       <module name="little-astronaut" />
@@ -97,7 +103,7 @@
       <module name="little-astronaut" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.nilsgke.littleAstronaut.*" />
+          <option name="PATTERN" value="com.nilsgke.littleAstronaut.menu.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -118,9 +124,37 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="WSClient" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.nilsgke.littleAstronaut.connection.WSClient" />
+      <module name="little-astronaut" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.nilsgke.littleAstronaut.connection.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="WSServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.nilsgke.littleAstronautServer.WSServer" />
+      <module name="little-astronaut" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.nilsgke.littleAstronautServer.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.WSServer" />
         <item itemvalue="Application.Main" />
+        <item itemvalue="Application.WSClient" />
         <item itemvalue="Application.Corona" />
         <item itemvalue="Application.SimpleGame" />
       </list>
@@ -129,8 +163,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.22562.218" />
-        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-IU-243.22562.218" />
+        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.23654.117" />
+        <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-IU-243.23654.117" />
       </set>
     </attachedChunks>
   </component>
@@ -163,6 +197,12 @@
       <workItem from="1737116013159" duration="1925000" />
       <workItem from="1737119589002" duration="172000" />
       <workItem from="1737133034925" duration="12552000" />
+      <workItem from="1737219193854" duration="262000" />
+      <workItem from="1737226591754" duration="2675000" />
+      <workItem from="1737370051122" duration="73000" />
+      <workItem from="1737492602686" duration="10744000" />
+      <workItem from="1737643681488" duration="4003000" />
+      <workItem from="1737761041230" duration="2786000" />
     </task>
     <task id="LOCAL-00001" summary="improve text rendering (caching), rocket animation and added arrow keys">
       <option name="closed" value="true" />
@@ -172,7 +212,23 @@
       <option name="project" value="LOCAL" />
       <updated>1736641391262</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="added blackscreen transition between levels">
+      <option name="closed" value="true" />
+      <created>1737495307547</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1737495307547</updated>
+    </task>
+    <task id="LOCAL-00003" summary="only generate platform image once and reuse it, since they are not changing">
+      <option name="closed" value="true" />
+      <created>1737500587894</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1737500587894</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,7 +236,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="improve text rendering (caching), rocket animation and added arrow keys" />
-    <option name="LAST_COMMIT_MESSAGE" value="improve text rendering (caching), rocket animation and added arrow keys" />
+    <MESSAGE value="added blackscreen transition between levels" />
+    <MESSAGE value="only generate platform image once and reuse it, since they are not changing" />
+    <option name="LAST_COMMIT_MESSAGE" value="only generate platform image once and reuse it, since they are not changing" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

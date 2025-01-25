@@ -1,13 +1,18 @@
 package com.nilsgke.littleAstronaut;
 
 
+import com.nilsgke.littleAstronaut.connection.WSClient;
 import com.nilsgke.littleAstronaut.levels.*;
+import com.nilsgke.littleAstronaut.menu.Menu;
+import com.nilsgke.littleAstronautServer.WSServer;
 import name.panitz.game2d.Game;
 import name.panitz.game2d.GameObj;
 import name.panitz.game2d.Vertex;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +39,9 @@ public class Main implements Game {
 
   private boolean DEBUG_MODE = false;
 
-  private boolean menuShown = true;
+  private com.nilsgke.littleAstronaut.menu.Menu menu;
+  private BufferedImage gameImage;
+  private boolean gameImageBlurred = false;
 
   //GameMap gameMap;
   Camera camera;
@@ -48,6 +55,9 @@ public class Main implements Game {
   int konami_pressed = 0;
   static final int[] konami_sequence = {38, 38, 40, 40, 37, 39, 37, 39, 66, 65}; // up, up, down, down, left, right, left, right, b, a
 
+  WSServer wsServer = null;
+  WSClient wsClient = null;
+
   public static void main(String[] args) throws Exception {
     new Main().play();
   }
@@ -59,6 +69,12 @@ public class Main implements Game {
     this.player = new Player(new Vertex(0, 0), new Vertex(0, 0), 70, 70);
     this.camera = new Camera(new Vertex(player.pos().x, player.pos().y));
     this.gameObjects = new ArrayList<>();
+
+    this.wsClient = new WSClient();
+    this.wsServer = new WSServer();
+
+    this.menu = new Menu(width, height, wsClient, wsServer);
+    this.gameImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
     loadLevel(currentLevelIndex);
   }
@@ -75,7 +91,7 @@ public class Main implements Game {
       default -> null;
     };
 
-    if(newLevel == null) {
+    if (newLevel == null) {
       gameFinished = true;
       newLevel = new FinishLevel();
     }
@@ -89,60 +105,88 @@ public class Main implements Game {
 
   @Override
   public void paintTo(Graphics g) {
-    g.setColor(currentLevel.backgroundColor());
-    g.fillRect(0, 0, width(), height());
+    if (menu.isOpen()) {
+      if (!gameImageBlurred) { // only blur image once and then reuse the blurred one
+        gameImage = Menu.applyBlur(gameImage, 4, 0.3f);
+        gameImageBlurred = true;
+      }
+
+      g.drawImage(gameImage, 0, 0, null); // draw blurred game image
+      menu.paintTo(g, width, height);
+      return;
+    }
+
+
+    gameImageBlurred = false;
+    Graphics2D g2d = gameImage.createGraphics();
+    drawGame(g2d);
+    if (DEBUG_MODE)
+      drawDebugStuff(g2d);
+    g.drawImage(gameImage, 0, 0, null);
+
+  }
+
+  private void drawGame(Graphics2D g2d) {
+    g2d.setColor(currentLevel.backgroundColor());
+    g2d.fillRect(0, 0, width(), height());
 
     int offsetX = -(int) (camera.pos().x - width() / 2.0);
     int offsetY = -(int) (camera.pos().y - height() / 2.0);
 
-    g.translate(offsetX, offsetY);
+    g2d.translate(offsetX, offsetY);
 
-    g.setColor(Color.WHITE);
-    for (var gos : goss()) gos.forEach(go -> go.paintTo(g));
+    g2d.setColor(Color.WHITE);
+    for (var gos : goss()) gos.forEach(go -> go.paintTo(g2d));
 
 
     for (var platform : currentLevel.platforms)
-      platform.paintTo(g);
+      platform.paintTo(g2d);
 
-    currentLevel.paintPlanetSign(g);
+    currentLevel.paintPlanetSign(g2d);
 
-    currentLevel.additionalPaint(g);
+    currentLevel.additionalPaint(g2d);
 
-    if (!currentLevel.finished && (currentLevel.animationState != Level.AnimationState.FLYING)) player().paintTo(g);
+    if (!currentLevel.finished && (currentLevel.animationState != Level.AnimationState.FLYING)) player().paintTo(g2d);
 
-    currentLevel.paintRocket(g);
+    currentLevel.paintRocket(g2d);
 
-    g.translate(-offsetX, -offsetY);
+    // ONLY HUD AND UI FROM HERE ON
+    g2d.translate(-offsetX, -offsetY); // reset offset to fix element to the screen
 
-    currentLevel.paintBlackScreen(g, (int) camera.pos().x, (int) camera.pos().y, width, height);
+    currentLevel.paintBlackScreen(g2d, (int) camera.pos().x, (int) camera.pos().y, width, height);
+  }
 
+  private void drawDebugStuff(Graphics2D g2d) {
+    // draw camera margin
+    g2d.setColor(Color.BLACK);
+    int camMarginTop = (int) (height() * CAM_MARGIN_PERCENTAGE);
+    int camMarginLeft = (int) (width() * CAM_MARGIN_PERCENTAGE);
+    g2d.drawLine(0, camMarginTop, width(), camMarginTop);
+    g2d.drawLine(0, height() - camMarginTop, width(), height() - camMarginTop);
+    g2d.drawLine(camMarginLeft, 0, camMarginLeft, height());
+    g2d.drawLine(width() - camMarginLeft, 0, width() - camMarginLeft, height());
 
-    if (DEBUG_MODE) {
-      // draw camera margin
-      g.setColor(Color.BLACK);
-      int camMarginTop = (int) (height() * CAM_MARGIN_PERCENTAGE);
-      int camMarginLeft = (int) (width() * CAM_MARGIN_PERCENTAGE);
-      g.drawLine(0, camMarginTop, width(), camMarginTop);
-      g.drawLine(0, height() - camMarginTop, width(), height() - camMarginTop);
-      g.drawLine(camMarginLeft, 0, camMarginLeft, height());
-      g.drawLine(width() - camMarginLeft, 0, width() - camMarginLeft, height());
-
-      // jump state bar
-      g.setColor(Color.BLUE);
-      g.drawRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) player.width(), 5);
-      g.fillRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) ((player.width() / MAX_JUMP) * Math.min(jumpValue, MAX_JUMP)), 5);
-
-
-      // paint finished zone
-      g.setColor(Color.MAGENTA);
-      g.drawRect((int) currentLevel.completeZone.pos().x, (int) currentLevel.completeZone.pos().y, (int) currentLevel.completeZone.width(), (int) currentLevel.completeZone.height());
-    }
+    // jump state bar
+    g2d.setColor(Color.BLUE);
+    g2d.drawRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) player.width(), 5);
+    g2d.fillRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) ((player.width() / MAX_JUMP) * Math.min(jumpValue, MAX_JUMP)), 5);
 
 
+    // paint finished zone
+    g2d.setColor(Color.MAGENTA);
+    g2d.drawRect((int) currentLevel.completeZone.pos().x, (int) currentLevel.completeZone.pos().y, (int) currentLevel.completeZone.width(), (int) currentLevel.completeZone.height());
   }
 
   @Override
   public void doChecks(int deltaTime) {
+    if (menu.isOpen()) return;
+
+
+    // move all game objects with velocity
+    for (var gos : goss()) gos.forEach(GameObj::move);
+    player().move();
+
+
     var playerVelocity = this.player.velocity();
 
     // gravity
@@ -265,7 +309,7 @@ public class Main implements Game {
       camera.acceleration().y += (camYDistanceToPlayer - (Math.signum(camYDistanceToPlayer) * yMarginFromCenter)) * deltaTime / 14.0;
     else camera.velocity().y *= 0.5; // prevents hitting ground camera bounce to bottom and back
 
-    if(!gameFinished)
+    if (!gameFinished)
       camera.update(deltaTime);
 
     if (camera.pos().y > currentLevel.minCamY())
@@ -274,9 +318,10 @@ public class Main implements Game {
 
   @Override
   public void keyPressedReaction(KeyEvent keyEvent) {
+    this.menu.keyTyped(keyEvent);
     int key = keyEvent.getKeyCode();
     if (pressedKeys.contains(key)) return;
-    if (key == KeyEvent.VK_I) DEBUG_MODE = !DEBUG_MODE;
+    if (key == KeyEvent.VK_I && !menu.isOpen()) DEBUG_MODE = !DEBUG_MODE;
     pressedKeys.add(key);
   }
 
@@ -293,6 +338,11 @@ public class Main implements Game {
       controls = controls == Controls.JETPACK ? Controls.JUMP_KING : Controls.JETPACK;
     }
 
+  }
+
+  @Override
+  public void mousePressedReaction(MouseEvent mouseEvent) {
+    menu.mousePressed(mouseEvent);
   }
 
   @Override

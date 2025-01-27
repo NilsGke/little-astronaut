@@ -2,6 +2,8 @@ package com.nilsgke.littleAstronaut;
 
 
 import com.nilsgke.littleAstronaut.connection.WSClient;
+import com.nilsgke.littleAstronaut.connection.WSData;
+import com.nilsgke.littleAstronaut.connection.WSServer;
 import com.nilsgke.littleAstronaut.levels.*;
 import com.nilsgke.littleAstronaut.menu.Menu;
 import name.panitz.game2d.Game;
@@ -12,6 +14,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +36,7 @@ public class Main implements Game {
   private int height;
 
   private Level currentLevel;
-  private int currentLevelIndex = 1;
+  private byte currentLevelIndex = 1;
   private boolean gameFinished = false;
 
   private boolean DEBUG_MODE = false;
@@ -54,7 +57,7 @@ public class Main implements Game {
   int konami_pressed = 0;
   static final int[] konami_sequence = {38, 38, 40, 40, 37, 39, 37, 39, 66, 65}; // up, up, down, down, left, right, left, right, b, a
 
-  WSClient.WSServer wsServer = null;
+  WSServer wsServer = null;
   WSClient wsClient = null;
 
   public static void main(String[] args) throws Exception {
@@ -70,7 +73,7 @@ public class Main implements Game {
     this.gameObjects = new ArrayList<>();
 
     this.wsClient = new WSClient();
-    this.wsServer = new WSClient.WSServer();
+    this.wsServer = new WSServer();
 
     this.menu = new Menu(width, height, wsClient, wsServer);
     this.gameImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -78,7 +81,7 @@ public class Main implements Game {
     loadLevel(currentLevelIndex);
   }
 
-  private void loadLevel(int levelNumber) {
+  private void loadLevel(byte levelNumber) {
     currentLevelIndex = levelNumber;
     System.out.printf("Loading level %d", levelNumber);
 
@@ -119,8 +122,7 @@ public class Main implements Game {
     gameImageBlurred = false;
     Graphics2D g2d = gameImage.createGraphics();
     drawGame(g2d);
-    if (DEBUG_MODE)
-      drawDebugStuff(g2d);
+    if (DEBUG_MODE) drawDebugStuff(g2d);
     g.drawImage(gameImage, 0, 0, null);
 
   }
@@ -144,6 +146,19 @@ public class Main implements Game {
     currentLevel.paintPlanetSign(g2d);
 
     currentLevel.additionalPaint(g2d);
+
+    g2d.setColor(Color.magenta);
+    // draw WSClient players
+    if (wsClient.getStatus() == WSClient.Status.CONNECTED)
+      for (var player : wsClient.players)
+        if (player.id() != wsClient.id)
+          g2d.drawRect((int) player.x(), (int) player.y(), 20, 20);
+    // draw WSServer players
+    if (wsServer.getStatus() == WSServer.Status.RUNNING)
+      for (var player : WSServer.players.entrySet()) {
+        var playerData = player.getValue();
+        if (playerData.id() != 0) g2d.drawRect((int) playerData.x(), (int) playerData.y(), 20, 20);
+      }
 
     if (!currentLevel.finished && (currentLevel.animationState != Level.AnimationState.FLYING)) player().paintTo(g2d);
 
@@ -203,10 +218,7 @@ public class Main implements Game {
         case Level.AnimationState.STARTING -> {
 
           // move player horizontally to rocket
-          this.player.pos.add(new Vertex(
-                  ((this.player.pos.x + this.player.width / 2) - (this.currentLevel.completeZone.pos().x + this.currentLevel.completeZone.width() / 2)) * -0.1,
-                  0
-          ));
+          this.player.pos.add(new Vertex(((this.player.pos.x + this.player.width / 2) - (this.currentLevel.completeZone.pos().x + this.currentLevel.completeZone.width() / 2)) * -0.1, 0));
 
         }
         case Level.AnimationState.FLYING -> {
@@ -217,7 +229,7 @@ public class Main implements Game {
           return; // prevent camera updates
         }
         case Level.AnimationState.DONE -> {
-          loadLevel(currentLevelIndex + 1);
+          loadLevel((byte) (currentLevelIndex + 1));
           return;
         }
       }
@@ -308,11 +320,27 @@ public class Main implements Game {
       camera.acceleration().y += (camYDistanceToPlayer - (Math.signum(camYDistanceToPlayer) * yMarginFromCenter)) * deltaTime / 14.0;
     else camera.velocity().y *= 0.5; // prevents hitting ground camera bounce to bottom and back
 
-    if (!gameFinished)
-      camera.update(deltaTime);
+    if (!gameFinished) camera.update(deltaTime);
 
     if (camera.pos().y > currentLevel.minCamY())
       camera.pos().moveTo(new Vertex(camera.pos().x, currentLevel.minCamY()));
+
+    // send player data to server, if connected
+    if (this.wsClient.getStatus() == WSClient.Status.CONNECTED) {
+      try {
+        byte[] playerData = WSData.Player.encodeWithIdentifier(this.wsClient.id, this.currentLevelIndex, this.player.pos.x, this.player.pos.y);
+        wsClient.sendBytes(playerData);
+      } catch (IOException e) {
+        System.err.println("could not send data to server");
+        System.err.println(e.getMessage());
+      }
+    }
+
+    // if player is hosting server, add player position
+    if (this.wsServer.getStatus() == WSServer.Status.RUNNING)
+      this.wsServer.updateOwnPosition(this.currentLevelIndex, this.player.pos.x, this.player.pos.y);
+
+
   }
 
   @Override

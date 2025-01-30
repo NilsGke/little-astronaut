@@ -46,7 +46,8 @@ public class Menu {
 
             // server start button
             new Clickable(350, 587, startIcon.getWidth() * 2, startIcon.getHeight() * 2, () -> {
-              if(wsClient.getStatus() != WSClient.Status.IDLE && wsClient.getStatus() != WSClient.Status.ERROR) return; // no action if client is connected to server
+              if (wsClient.getStatus() != WSClient.Status.IDLE && wsClient.getStatus() != WSClient.Status.ERROR)
+                return; // no action if client is connected to server
 
               switch (wsServer.getStatus()) {
                 case STOPPED -> wsServer.start();
@@ -60,7 +61,7 @@ public class Menu {
             new Clickable(860, 627, startIcon.getWidth() * 2, startIcon.getHeight() * 2, () -> {
               if (wsServer.getStatus() == WSServer.Status.RUNNING) return; // no action if user is hosting the server
 
-              if(wsClient.getStatus() == WSClient.Status.CONNECTED) {
+              if (wsClient.getStatus() == WSClient.Status.CONNECTED) {
                 wsClient.disconnect();
                 return;
               }
@@ -82,8 +83,7 @@ public class Menu {
               }
 
 
-            })
-    };
+            })};
 
     this.ipInput = new InputBox(520, 635, 320, 2, "161.420.787.069:1234", "ABCDEF0123456789.:");
   }
@@ -97,7 +97,7 @@ public class Menu {
   public void keyTyped(KeyEvent keyEvent) {
     if (keyEvent.getKeyCode() == KeyEvent.VK_ESCAPE && !this.ipInput.isFocused()) this.toggle();
     this.ipInput.keyTyped(keyEvent);
-    if(this.ipInput.isFocused() && this.wsClient.getStatus() == WSClient.Status.ERROR) this.wsClient.disconnect();
+    if (this.ipInput.isFocused() && this.wsClient.getStatus() == WSClient.Status.ERROR) this.wsClient.disconnect();
   }
 
   public void paintTo(Graphics g, int width, int height) {
@@ -134,8 +134,7 @@ public class Menu {
       g.drawImage(startIcon, 860, 627, startIcon.getWidth() * 2, startIcon.getHeight() * 2, null);
     else if (wsClient.getStatus() == WSClient.Status.CONNECTED)
       g.drawImage(terminateIcon, 860, 627, startIcon.getWidth() * 2, startIcon.getHeight() * 2, null);
-    else
-      Text.paintTo(g, "ERROR!",  860, 640, 2, Color.RED);
+    else Text.paintTo(g, "ERROR!", 860, 640, 2, Color.RED);
 
     // ip input box
     ipInput.paintTo(g);

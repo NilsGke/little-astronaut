@@ -41,7 +41,7 @@ public class Main implements Game {
 
   private boolean DEBUG_MODE = false;
 
-  private com.nilsgke.littleAstronaut.menu.Menu menu;
+  private final Menu menu;
   private BufferedImage gameImage;
   private boolean gameImageBlurred = false;
 
@@ -68,11 +68,11 @@ public class Main implements Game {
     this.height = 700;
     this.width = 1000;
 
-    this.player = new Player(new Vertex(0, 0), new Vertex(0, 0), 70, 70);
+    this.player = new Player((byte) 0, new Vertex(0, 0), new Vertex(0, 0));
     this.camera = new Camera(new Vertex(player.pos().x, player.pos().y));
     this.gameObjects = new ArrayList<>();
 
-    this.wsClient = new WSClient();
+    this.wsClient = new WSClient(this.player);
     this.wsServer = new WSServer();
 
     this.menu = new Menu(width, height, wsClient, wsServer);
@@ -149,14 +149,22 @@ public class Main implements Game {
 
     g2d.setColor(Color.magenta);
     // draw WSClient players
+    System.out.println("draw players");
     if (wsClient.getStatus() == WSClient.Status.CONNECTED)
-      for (var player : wsClient.players)
-        if (player.id() != wsClient.id)
-          g2d.drawRect((int) player.x(), (int) player.y(), 20, 20);
+      for (var entry : wsClient.players.entrySet()) {
+        var remoteId = entry.getKey();
+        System.out.println("remoteId = " + remoteId);
+        if (remoteId != this.player.id) { // prevent painting own player
+          var remotePlayer = entry.getValue();
+          g2d.drawRect((int) remotePlayer.pos().x, (int) remotePlayer.pos().y, 20, 20);
+        }
+      }
+
+
     // draw WSServer players
     if (wsServer.getStatus() == WSServer.Status.RUNNING)
-      for (var player : WSServer.players.entrySet()) {
-        var playerData = player.getValue();
+      for (var remotePlayer : WSServer.players.entrySet()) {
+        var playerData = remotePlayer.getValue();
         if (playerData.id() != 0) g2d.drawRect((int) playerData.x(), (int) playerData.y(), 20, 20);
       }
 
@@ -327,13 +335,15 @@ public class Main implements Game {
 
     // send player data to server, if connected
     if (this.wsClient.getStatus() == WSClient.Status.CONNECTED) {
-      try {
-        byte[] playerData = WSData.Player.encodeWithIdentifier(this.wsClient.id, this.currentLevelIndex, this.player.pos.x, this.player.pos.y);
-        wsClient.sendBytes(playerData);
-      } catch (IOException e) {
-        System.err.println("could not send data to server");
-        System.err.println(e.getMessage());
-      }
+      // if (this.player.id == 0) this.wsClient.requestId();
+      // else
+        try {
+          byte[] playerData = WSData.Player.encodeWithIdentifier(this.player.id, this.currentLevelIndex, this.player.pos.x, this.player.pos.y);
+          wsClient.sendBytes(playerData);
+        } catch (IOException e) {
+          System.err.println("could not send data to server");
+          System.err.println(e.getMessage());
+        }
     }
 
     // if player is hosting server, add player position

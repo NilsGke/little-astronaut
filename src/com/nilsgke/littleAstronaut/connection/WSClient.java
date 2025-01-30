@@ -1,9 +1,14 @@
 package com.nilsgke.littleAstronaut.connection;
 
+import com.nilsgke.littleAstronaut.Player;
+import name.panitz.game2d.Vertex;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.security.MessageDigest;
+
+import static com.nilsgke.littleAstronaut.connection.WSData.printHex;
 
 public class WSClient {
   public enum Status {
@@ -11,61 +16,92 @@ public class WSClient {
   }
 
   private Status status = Status.IDLE;
-  public byte id;
+  public final Player player;
 
-  public final Set<WSData.Player> players = Collections.synchronizedSet(new HashSet<>());
+  public final Map<Byte, Player> players = Collections.synchronizedMap(new HashMap<>());
 
   private Socket socket;
   private PrintWriter out;
   private BufferedReader in;
 
   public static void main(String[] args) {
-    WSClient client = new WSClient();
+    WSClient client = new WSClient(new Player((byte) 0, new Vertex(0, 0), new Vertex(0, 0)));
     client.connect("localhost", "8080");
     client.listenForMessages();
   }
 
-  // GPT 4o
-  public void connect(String host, String port) {
-    this.status = Status.CONNECTING;
+  public WSClient(Player player) {
+    this.player = player;
+  }
 
-    System.out.println("connecting to server: " + host + ":" + port);
+  public void connect(String host, String port) {
+    if (status != Status.IDLE) {
+      System.out.println("Client is not in IDLE state");
+      return;
+    }
+    
+    status = Status.CONNECTING;
     try {
-      // Resolve the server's hostname
-      InetAddress address = InetAddress.getByName(host);
-      socket = new Socket(address, Integer.parseInt(port));
+      // Establish TCP connection
+      socket = new Socket(host, Integer.parseInt(port));
       out = new PrintWriter(socket.getOutputStream(), true);
       in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-      // Perform WebSocket handshake
-      String key = Base64.getEncoder().encodeToString("randomKey".getBytes());
+      // Generate random WebSocket key
+      byte[] randomBytes = new byte[16];
+      new Random().nextBytes(randomBytes);
+      String key = Base64.getEncoder().encodeToString(randomBytes);
+
+      // Send WebSocket handshake request
       out.println("GET / HTTP/1.1");
-      out.println("Host: " + host);
+      out.println("Host: " + host + ":" + port);
       out.println("Upgrade: websocket");
       out.println("Connection: Upgrade");
       out.println("Sec-WebSocket-Key: " + key);
-      out.println("Sec-WebSocket-Version: 13");
+//      out.println("Sec-WebSocket-Version: 13");
       out.println();
+      out.flush();
 
-      // Read the server's response
+      // Read server's handshake response
       String line;
-      while (!(line = in.readLine()).isEmpty()) {
-        System.out.println("Server: " + line);
+      boolean handshakeValid = false;
+      while ((line = in.readLine()) != null && !line.isEmpty()) {
+        if (line.contains("Sec-WebSocket-Accept")) {
+          String serverAccept = line.split(": ")[1].trim();
+          String expectedAccept = generateAcceptKey(key);
+          if (expectedAccept != null && expectedAccept.equals(serverAccept)) {
+            handshakeValid = true;
+          }
+        }
       }
 
-      // Validate the handshake
-      String acceptKey = generateAcceptKey(key);
-      System.out.println("Expected Accept Key: " + acceptKey);
+      if (!handshakeValid) {
+        throw new IOException("WebSocket handshake failed");
+      }
 
-      // request ID
-      sendBytes(new byte[]{WSData.IDRequest.IDENTIFIER});
+      // Wait a brief moment for the handshake to complete
+      Thread.sleep(100);
 
-      this.status = Status.CONNECTED;
-
-    } catch (IOException e) {
+      status = Status.CONNECTED;
+      System.out.println("Connected to WebSocket server");
+      
+    } catch (Exception e) {
+      System.out.println("Connection failed: " + e.getMessage());
       e.printStackTrace();
-      this.status = Status.ERROR;
+      disconnect();
+      setStatusToError();
     }
+  }
+
+  public void requestId() {
+    // request ID
+    try {
+      sendBytes(new byte[]{WSData.IDRequest.IDENTIFIER, 0, 0, 0});
+    } catch (IOException e) {
+      System.out.println("requesting id failed");
+      throw new RuntimeException(e);
+    }
+    System.out.println("requested id");
   }
 
   public void disconnect() {
@@ -90,6 +126,9 @@ public class WSClient {
 
   // GPT 4o
   public void sendBytes(byte[] data) throws IOException {
+    System.out.println("sending message");
+    printHex(data);
+
     OutputStream outputStream = socket.getOutputStream();
 
     // Write the first byte: FIN (final frame) + Opcode (0x2 for binary)
@@ -141,15 +180,26 @@ public class WSClient {
     byte[] data = Arrays.copyOfRange(message, 1, message.length);
     switch (identifier) {
       case WSData.ID.IDENTIFIER -> {
-        this.id = WSData.ID.decode(data).id();
-        System.out.println("received id: " + this.id);
+        this.player.id = WSData.ID.decode(data).id();
+        System.out.println("received id: " + this.player.id);
       }
       case WSData.PlayerList.IDENTIFIER -> {
         players.clear();
-        var playerList = WSData.PlayerList.decode(data);
-        Collections.addAll(players, playerList.players());
+        var remotePlayerList = WSData.PlayerList.decode(data);
+
+        if(remotePlayerList.players().length < players.size()) players.clear(); // clear players if size does not match (player left)
+        for (var playerData : remotePlayerList.players()) {
+          Player newPlayer = new Player(
+                  playerData.id(),
+                  new Vertex(playerData.x(), playerData.y()),
+                  new Vertex(0, 0)
+          );
+          players.put(playerData.id(), newPlayer);
+          System.out.println("newPlayer.id = " + newPlayer.id);
+        }
+
       }
-      default -> System.err.println("unsupported message type");
+      default -> System.err.println("unsupported message type received on client");
     }
   }
 

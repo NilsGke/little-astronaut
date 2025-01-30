@@ -16,6 +16,7 @@ import java.io.IOException;
 public class Player implements GameObj {
 
   enum XDirection { LEFT, RIGHT }
+  public byte id;
 
   Vertex pos;
   Vertex velocity;
@@ -28,11 +29,12 @@ public class Player implements GameObj {
   Animation animation_jump;
   Animation animation_idle;
 
-  Player(Vertex pos, Vertex velocity, double width, double height) {
+  public Player(byte id, Vertex pos, Vertex velocity) {
+    this.id = id;
     this.pos = pos;
     this.velocity = velocity;
-    this.width = width;
-    this.height = height;
+    this.width = 70;
+    this.height = 70;
 
     try {
       BufferedImage spriteRunRight = ImageIO.read(new File("assets/player/astronaut-run.png"));

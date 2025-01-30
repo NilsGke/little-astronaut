@@ -8,6 +8,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.nilsgke.littleAstronaut.connection.WSData.printHex;
+
 public class WSServer {
   public enum Status {
     STOPPED, STARTING, RUNNING
@@ -44,7 +46,7 @@ public class WSServer {
         String serverIp = getServerIpAddress();
         System.out.println("WebSocket server started on " + serverIp + ":" + PORT);
 
-        // Broadcast player positions every 2 seconds
+        // Broadcast player positions every 13 ms (~60 fps)
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> broadcastBytes(WSData.PlayerList.encodeWithIdentifierFromPlayerMap(players)), 0, 13, TimeUnit.MILLISECONDS);
 
@@ -163,6 +165,17 @@ public class WSServer {
             out.println("Sec-WebSocket-Accept: " + responseKey);
             out.println();
             out.flush(); // Ensure headers are sent immediately
+
+            // Wait a brief moment for handshake to complete
+            try {
+              Thread.sleep(100);
+            } catch (InterruptedException e) {
+              throw new RuntimeException(e);
+            }
+
+            // Assign and send ID to client
+            idCounter++;
+            sendMessageToClient(clientSocket.getOutputStream(), WSData.ID.encodeWithIdentifier(idCounter));
             break;
           }
         }
@@ -181,38 +194,68 @@ public class WSServer {
           e.printStackTrace();
         }
         clients.remove(clientSocket);
+        System.out.println("CLEANING UP HERE");
+        players.clear(); // clear player set so all players are removed and will be back on next client message
       }
     }
 
     private byte[] readMessage(InputStream in) throws IOException {
-      int b1 = in.read();
-      int b2 = in.read();
-      if (b1 == -1 || b2 == -1) return null;
+      int firstByte = in.read();
+      if (firstByte == -1) return null;
 
-      int payloadLength = b2 & 127;
-      if (payloadLength == 126) {
-        payloadLength = (in.read() << 8) | in.read();
-      } else if (payloadLength == 127) {
-        // Handle very large payloads if necessary
+      boolean fin = (firstByte & 0x80) != 0; // FIN flag
+      int opcode = firstByte & 0x0F; // Opcode
+
+      if (opcode == 8) {
+        System.out.println("Client requested to close connection.");
         return null;
       }
 
-      // Read the payload
+      int secondByte = in.read();
+      if (secondByte == -1) return null;
+
+      boolean masked = (secondByte & 0x80) != 0;
+      int payloadLength = secondByte & 0x7F;
+
+      if (payloadLength == 126) {
+        payloadLength = (in.read() << 8) | in.read();
+      } else if (payloadLength == 127) {
+        for (int i = 0; i < 6; i++) in.read(); // Skip the first 6 bytes (only last 2 are used)
+        payloadLength = (in.read() << 8) | in.read();
+      }
+
+      byte[] maskingKey = new byte[4];
+      if (masked) {
+        in.read(maskingKey, 0, 4);
+      }
+
       byte[] payload = new byte[payloadLength];
       int bytesRead = 0;
       while (bytesRead < payloadLength) {
-        bytesRead += in.read(payload, bytesRead, payloadLength - bytesRead);
+        int read = in.read(payload, bytesRead, payloadLength - bytesRead);
+        if (read == -1) return null;
+        bytesRead += read;
       }
 
-      return payload;
+      if (masked) {
+        for (int i = 0; i < payload.length; i++) {
+          payload[i] ^= maskingKey[i % 4]; // Unmask payload
+        }
+      }
+
+      return payload;  // This now contains just the actual message data, not the WebSocket frame
     }
 
     private void handleMessage(byte[] message) {
+      System.out.println("got a new message");
+      printHex(message);
+
       byte identifier = message[0];
       byte[] data = Arrays.copyOfRange(message, 1, message.length);
 
       switch (identifier) {
         case WSData.IDRequest.IDENTIFIER -> {
+          System.out.println("got id request");
           idCounter++;
           try {
             var messageOut = clientSocket.getOutputStream();
@@ -220,12 +263,14 @@ public class WSServer {
           } catch (IOException e) {
             throw new RuntimeException(e);
           }
+          System.out.println("id request handled");
         }
         case WSData.Player.IDENTIFIER -> {
           var player = WSData.Player.decode(data);
           players.put(player.id(), player);
         }
         default -> System.err.println("unsupported message received on server!\nIdentifier: " + identifier);
+
       }
 
     }

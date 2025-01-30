@@ -8,7 +8,7 @@ import java.util.Map;
 public class WSData {
 
   public record ID(byte id) {
-    public static final byte IDENTIFIER = (byte) 0b00000010;
+    public static final byte IDENTIFIER = (byte) 0x2;
 
     // 1 byte for id
 
@@ -22,7 +22,7 @@ public class WSData {
   }
 
   public record Player(byte id, byte level, double x, double y) {
-    public static final byte IDENTIFIER = (byte) 0b00000001;
+    public static final byte IDENTIFIER = (byte) 0x1;
     public static final int BYTES = 2 + 8 * 2;
     // 1 byte for id
     // 1 byte for level
@@ -48,7 +48,7 @@ public class WSData {
   }
 
   public record PlayerList(Player[] players) {
-    public static final byte IDENTIFIER = (byte) 0b00000011;
+    public static final byte IDENTIFIER = (byte) 0x3;
 
     // n bytes per player concatenated
 
@@ -100,7 +100,17 @@ public class WSData {
   }
 
   public class IDRequest {
-    public static final byte IDENTIFIER = (byte) 0b00000100;
+    public static final byte IDENTIFIER = (byte) 0x4;
   }
+
+  public static void printHex(byte[] byteArray) {
+    StringBuilder hexString = new StringBuilder();
+    for (byte b : byteArray) {
+      // Convert each byte to hex and append to the StringBuilder
+      hexString.append(String.format("%02X ", b));
+    }
+    System.out.println(hexString.toString().trim());
+  }
+
 
 }

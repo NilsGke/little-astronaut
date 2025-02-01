@@ -21,20 +21,40 @@ public class WSData {
     }
   }
 
-  public record Player(byte id, byte level, double x, double y) {
+  public record Player(byte id, byte level, double x, double y, double xVel, double yVel) {
     public static final byte IDENTIFIER = (byte) 0x1;
-    public static final int BYTES = 2 + 8 * 2;
+    public static final int BYTES = 2 + 8 * 4;
+
     // 1 byte for id
     // 1 byte for level
     // 8 bytes for x (double)
     // 8 bytes for y (double)
+    // 8 bytes for xVelocity (double)
+    // 8 bytes for yVelocity (double)
 
     public byte[] encode() {
-      return ByteBuffer.allocate(2 + 8 * 2).put(0, id).put(1, level).putDouble(2, x).putDouble(2 + 8, y).array();
+      return ByteBuffer
+              .allocate(2 + 8 * 4)
+              .put(0, id)
+              .put(1, level)
+              .putDouble(2, x)
+              .putDouble(2 + 8, y)
+              .putDouble(2 + 8 * 2, xVel)
+              .putDouble(2 + 8 * 3, yVel)
+              .array();
     }
 
-    public static byte[] encodeWithIdentifier(byte id, byte level, double x, double y) {
-      return ByteBuffer.allocate(3 + 8 * 2).put(0, IDENTIFIER).put(1, id).put(2, level).putDouble(3, x).putDouble(3 + 8, y).array();
+    public static byte[] encodeWithIdentifier(byte id, byte level, double x, double y, double xVel, double yVel) {
+      return ByteBuffer
+              .allocate(3 + 8 * 4)
+              .put(0, IDENTIFIER)
+              .put(1, id)
+              .put(2, level)
+              .putDouble(3, x)
+              .putDouble(3 + 8, y)
+              .putDouble(3 + 8 * 2, xVel)
+              .putDouble(3 + 8 * 3, yVel)
+              .array();
     }
 
     public static Player decode(byte[] bytes) {
@@ -43,7 +63,10 @@ public class WSData {
       byte level = buffer.get(1);
       double x = buffer.getDouble(2);
       double y = buffer.getDouble(2 + 8);
-      return new Player(id, level, x, y);
+      double xVel = buffer.getDouble(2 + 8 * 2);
+      double yVel = buffer.getDouble(2 + 8 * 3);
+
+      return new Player(id, level, x, y, xVel, yVel);
     }
   }
 
@@ -89,7 +112,9 @@ public class WSData {
 
       int counter = 0;
       for (var player : playerMap.entrySet()) {
-        buffer.put(1 + counter * Player.BYTES, player.getValue().encode());
+        Player playerData = player.getValue();
+        byte[] playerBytes = playerData.encode();
+        buffer.put(1 + counter * Player.BYTES, playerBytes);
         counter++;
       }
 

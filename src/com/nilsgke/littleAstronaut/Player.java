@@ -76,6 +76,8 @@ public class Player implements GameObj {
     else animation_idle.paintTo(g, (int) this.pos().x, (int) this.pos().y - 10, lastDirection == XDirection.LEFT); // idle
   }
 
+
+
   @Override
   public Vertex pos() {
     return pos;

@@ -11,7 +11,7 @@ public class SwingScreen extends JPanel{
     this.logic = gl;
 
 
-    t = new Timer(13, (ev)->{
+    t = new Timer(1000/60, (ev)->{
         //logic.move();
         logic.doChecks(t.getDelay());
         repaint();

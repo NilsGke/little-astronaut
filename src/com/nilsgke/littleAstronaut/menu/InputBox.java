@@ -18,7 +18,7 @@ public class InputBox {
 
   private boolean focused = false;
   private boolean enabled = true;
-  private String content = "";
+  private String content = "localhost:8080";
 
   private static final int padding = 4;
 

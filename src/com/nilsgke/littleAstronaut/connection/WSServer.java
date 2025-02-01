@@ -4,11 +4,8 @@ import java.io.*;
 import java.net.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
-import static com.nilsgke.littleAstronaut.connection.WSData.printHex;
 
 public class WSServer {
   public enum Status {
@@ -16,11 +13,13 @@ public class WSServer {
   }
 
   private static final int PORT = 8080;
-  private static final Set<Socket> clients = Collections.synchronizedSet(new HashSet<>());
-  public static final Map<Byte, WSData.Player> players = Collections.synchronizedMap(new HashMap<>());
+  private static final Set<Socket> clients = new CopyOnWriteArraySet<>();
+  public static final Map<Byte, WSData.Player> players = new ConcurrentHashMap<>();
   private Status status = Status.STOPPED;
   private ServerSocket serverSocket;
   private Thread serverThread;
+  private ScheduledExecutorService broadcastScheduler;
+  private String URI;
 
   private static byte idCounter = 0; // reflects current id, in use; user, hosting the server is id 0
 
@@ -33,22 +32,34 @@ public class WSServer {
     return status;
   }
 
+  public String getURI() {
+    return URI;
+  }
+
   public void start() {
     if (status == Status.RUNNING) {
       System.out.println("Server is already running.");
       return;
     }
     status = Status.STARTING;
+    System.out.println("starting server...");
     serverThread = new Thread(() -> {
+      System.out.println("got thread");
       try {
         serverSocket = new ServerSocket(PORT);
+        System.out.println("created socket");
         status = Status.RUNNING;
-        String serverIp = getServerIpAddress();
-        System.out.println("WebSocket server started on " + serverIp + ":" + PORT);
 
-        // Broadcast player positions every 13 ms (~60 fps)
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> broadcastBytes(WSData.PlayerList.encodeWithIdentifierFromPlayerMap(players)), 0, 13, TimeUnit.MILLISECONDS);
+
+        updateUriInBackground();
+        System.out.println("starting broadcast");
+        // Broadcast player positions every 20 ms (~60 fps)
+        broadcastScheduler = Executors.newSingleThreadScheduledExecutor();
+        broadcastScheduler.scheduleAtFixedRate(() -> {
+          if (!players.isEmpty())
+            broadcastBytes(WSData.PlayerList.encodeWithIdentifierFromPlayerMap(players));
+        }, 0, 20, TimeUnit.MILLISECONDS);
+        System.out.println("scheduled broadcast (running)");
 
         // accept users connecting
         while (status == Status.RUNNING) {
@@ -63,6 +74,7 @@ public class WSServer {
         stop(); // Ensure resources are cleaned up
       }
     });
+    System.out.println("start thread");
     serverThread.start();
   }
 
@@ -72,31 +84,57 @@ public class WSServer {
       return;
     }
 
+    System.out.println("stopping server");
     status = Status.STOPPED;
     try {
+      if (broadcastScheduler != null) {
+        broadcastScheduler.shutdown();
+        try {
+          if (!broadcastScheduler.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+            broadcastScheduler.shutdownNow();
+          }
+          System.out.println("stopped broadcast");
+        } catch (InterruptedException e) {
+          broadcastScheduler.shutdownNow();
+        }
+      }
+
       if (serverSocket != null && !serverSocket.isClosed()) {
         serverSocket.close();
+        System.out.println("socket closed");
       }
       for (Socket client : clients) {
         client.close();
+
       }
+      System.out.println("clients closed");
       clients.clear();
-      serverThread.join(); // Wait for the server thread to finish
+      serverThread.interrupt(); // Wait for the server thread to finish
+
       System.out.println("WebSocket server stopped.");
-    } catch (IOException | InterruptedException e) {
+
+
+    } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
-  public void updateOwnPosition(byte level, double x, double y) {
-    players.put((byte) 0, new WSData.Player((byte) 0, level, x, y));
+  public void updateOwnPosition(byte level, double x, double y, double xVel, double yVel) {
+    players.put((byte) 0, new WSData.Player((byte) 0, level, x, y, xVel, yVel));
   }
 
-  public String getWebSocketURI() {
-    return getServerIpAddress() + ":" + PORT; // Use server's IP address
+  private void updateUriInBackground() {
+    System.out.println("getting server uri");
+    new Thread(() -> {
+      System.out.println("in thread");
+      URI = getServerIpAddress() + ":" + PORT;
+      System.out.println("done in thread");
+    }).start();
+    System.out.println("done with method");
+
   }
 
-  private String getServerIpAddress() {
+  private static String getServerIpAddress() {
     try {
       InetAddress localHost = InetAddress.getLocalHost();
       return localHost.getHostAddress(); // Get the server's IP address
@@ -188,13 +226,13 @@ public class WSServer {
       } catch (IOException | NoSuchAlgorithmException e) {
         e.printStackTrace();
       } finally {
+        System.out.println("Client disconnected: " + clientSocket.getLocalAddress());
         try {
           clientSocket.close();
         } catch (IOException e) {
           e.printStackTrace();
         }
         clients.remove(clientSocket);
-        System.out.println("CLEANING UP HERE");
         players.clear(); // clear player set so all players are removed and will be back on next client message
       }
     }
@@ -247,8 +285,9 @@ public class WSServer {
     }
 
     private void handleMessage(byte[] message) {
-      System.out.println("got a new message");
-      printHex(message);
+//      System.out.println("got a new message");
+//      printHex(message);
+//      System.out.println();
 
       byte identifier = message[0];
       byte[] data = Arrays.copyOfRange(message, 1, message.length);

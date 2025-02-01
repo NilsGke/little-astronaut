@@ -149,14 +149,12 @@ public class Main implements Game {
 
     g2d.setColor(Color.magenta);
     // draw WSClient players
-    System.out.println("draw players");
     if (wsClient.getStatus() == WSClient.Status.CONNECTED)
       for (var entry : wsClient.players.entrySet()) {
         var remoteId = entry.getKey();
-        System.out.println("remoteId = " + remoteId);
         if (remoteId != this.player.id) { // prevent painting own player
           var remotePlayer = entry.getValue();
-          g2d.drawRect((int) remotePlayer.pos().x, (int) remotePlayer.pos().y, 20, 20);
+          remotePlayer.paintTo(g2d);
         }
       }
 
@@ -333,22 +331,26 @@ public class Main implements Game {
     if (camera.pos().y > currentLevel.minCamY())
       camera.pos().moveTo(new Vertex(camera.pos().x, currentLevel.minCamY()));
 
-    // send player data to server, if connected
+
     if (this.wsClient.getStatus() == WSClient.Status.CONNECTED) {
-      // if (this.player.id == 0) this.wsClient.requestId();
-      // else
-        try {
-          byte[] playerData = WSData.Player.encodeWithIdentifier(this.player.id, this.currentLevelIndex, this.player.pos.x, this.player.pos.y);
-          wsClient.sendBytes(playerData);
-        } catch (IOException e) {
-          System.err.println("could not send data to server");
-          System.err.println(e.getMessage());
-        }
+      // send player data to server
+      try {
+        byte[] playerData = WSData.Player.encodeWithIdentifier(this.player.id, this.currentLevelIndex, this.player.pos.x, this.player.pos.y, this.player.velocity.x, this.player.velocity.y);
+        wsClient.sendBytes(playerData);
+      } catch (IOException e) {
+        System.err.println("could not send data to server");
+        System.err.println(e.getMessage());
+      }
+
+      // simulate remote player physics
+//      for (var remotePlayer : wsClient.players.entrySet())
+//        remotePlayer.getValue().move();
     }
 
     // if player is hosting server, add player position
     if (this.wsServer.getStatus() == WSServer.Status.RUNNING)
-      this.wsServer.updateOwnPosition(this.currentLevelIndex, this.player.pos.x, this.player.pos.y);
+      this.wsServer.updateOwnPosition(this.currentLevelIndex, this.player.pos.x, this.player.pos.y, this.player.velocity.x, this.player.velocity.y);
+
 
 
   }

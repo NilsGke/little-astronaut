@@ -126,7 +126,7 @@ public class Menu {
       g.drawImage(startIcon, 350, 587, startIcon.getWidth() * 2, startIcon.getHeight() * 2, null);
     else {
       g.drawImage(terminateIcon, 350, 587, startIcon.getWidth() * 2, startIcon.getHeight() * 2, null);
-      Text.paintTo(g, String.format("Running at: %s", wsServer.getWebSocketURI()), 400, 600, 2, new Color(56, 209, 56));
+      Text.paintTo(g, String.format("Running at: %s", wsServer.getURI()), 400, 600, 2, new Color(56, 209, 56));
     }
 
     // client connect button

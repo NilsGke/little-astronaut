@@ -8,8 +8,6 @@ import java.net.*;
 import java.util.*;
 import java.security.MessageDigest;
 
-import static com.nilsgke.littleAstronaut.connection.WSData.printHex;
-
 public class WSClient {
   public enum Status {
     IDLE, CONNECTING, CONNECTED, ERROR
@@ -39,7 +37,7 @@ public class WSClient {
       System.out.println("Client is not in IDLE state");
       return;
     }
-    
+
     status = Status.CONNECTING;
     try {
       // Establish TCP connection
@@ -84,24 +82,13 @@ public class WSClient {
 
       status = Status.CONNECTED;
       System.out.println("Connected to WebSocket server");
-      
+
     } catch (Exception e) {
       System.out.println("Connection failed: " + e.getMessage());
       e.printStackTrace();
       disconnect();
       setStatusToError();
     }
-  }
-
-  public void requestId() {
-    // request ID
-    try {
-      sendBytes(new byte[]{WSData.IDRequest.IDENTIFIER, 0, 0, 0});
-    } catch (IOException e) {
-      System.out.println("requesting id failed");
-      throw new RuntimeException(e);
-    }
-    System.out.println("requested id");
   }
 
   public void disconnect() {
@@ -126,8 +113,9 @@ public class WSClient {
 
   // GPT 4o
   public void sendBytes(byte[] data) throws IOException {
-    System.out.println("sending message");
-    printHex(data);
+//    System.out.println("sending message");
+//    printHex(data);
+//    System.out.println();
 
     OutputStream outputStream = socket.getOutputStream();
 
@@ -176,6 +164,10 @@ public class WSClient {
   }
 
   private void handleMessage(byte[] message) {
+//    System.out.println("GOT MESSAGE");
+//    WSData.printHex(message);
+//    System.out.println();
+
     byte identifier = message[0];
     byte[] data = Arrays.copyOfRange(message, 1, message.length);
     switch (identifier) {
@@ -184,18 +176,30 @@ public class WSClient {
         System.out.println("received id: " + this.player.id);
       }
       case WSData.PlayerList.IDENTIFIER -> {
-        players.clear();
         var remotePlayerList = WSData.PlayerList.decode(data);
 
-        if(remotePlayerList.players().length < players.size()) players.clear(); // clear players if size does not match (player left)
+        if (remotePlayerList.players().length < players.size()) {
+          players.clear(); // clear players if size does not match (player left)
+          System.out.println("cleared player map");
+        }
+
         for (var playerData : remotePlayerList.players()) {
-          Player newPlayer = new Player(
-                  playerData.id(),
-                  new Vertex(playerData.x(), playerData.y()),
-                  new Vertex(0, 0)
-          );
-          players.put(playerData.id(), newPlayer);
-          System.out.println("newPlayer.id = " + newPlayer.id);
+          Player existing = players.get(playerData.id());
+
+          if (existing != null) { // update player, if already in map
+            existing.pos().moveTo(new Vertex(playerData.x(), playerData.y()));
+            existing.velocity().moveTo(new Vertex(playerData.xVel(), playerData.yVel()));
+          } else { // create new player if not in map
+            Player newPlayer = new Player(
+                    playerData.id(),
+                    new Vertex(playerData.x(), playerData.y()),
+                    new Vertex(0, 0)
+            );
+            System.out.println("adding new player to map");
+
+            players.put(playerData.id(), newPlayer);
+          }
+
         }
 
       }

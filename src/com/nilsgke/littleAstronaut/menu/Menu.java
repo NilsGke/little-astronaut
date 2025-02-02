@@ -90,8 +90,12 @@ public class Menu {
 
 
   public void mousePressed(MouseEvent mouseEvent) {
-    for (var clickable : clickables) clickable.checkForClick(mouseEvent.getX(), mouseEvent.getY());
+    for (var clickable : clickables) clickable.mousePressed(mouseEvent);
     this.ipInput.mousePressed(mouseEvent);
+  }
+
+  public void mouseReleased(MouseEvent mouseEvent) {
+    for (var clickable : clickables) clickable.mouseReleased(mouseEvent);
   }
 
   public void keyTyped(KeyEvent keyEvent) {

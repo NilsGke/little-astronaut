@@ -380,8 +380,18 @@ public class Main implements Game {
   }
 
   @Override
+  public void mouseClickedReaction(MouseEvent mouseEvent) {
+
+  }
+
+  @Override
   public void mousePressedReaction(MouseEvent mouseEvent) {
     menu.mousePressed(mouseEvent);
+  }
+
+  @Override
+  public void mouseReleasedReaction(MouseEvent mouseEvent) {
+    menu.mouseReleased(mouseEvent);
   }
 
   @Override

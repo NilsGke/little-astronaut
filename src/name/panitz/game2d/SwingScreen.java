@@ -31,7 +31,17 @@ public class SwingScreen extends JPanel{
     addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
+        logic.mouseClickedReaction(e);
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e) {
         logic.mousePressedReaction(e);
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        logic.mouseReleasedReaction(e);
       }
     });
     setFocusable(true);

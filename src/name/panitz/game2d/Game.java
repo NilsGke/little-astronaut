@@ -25,7 +25,9 @@ public interface Game {
 
   void keyReleasedReaction(KeyEvent keyEvent);
 
+  void mouseClickedReaction(MouseEvent mouseEvent);
   void mousePressedReaction(MouseEvent mouseEvent);
+  void mouseReleasedReaction(MouseEvent mouseEvent);
 
   default void move(){
   	if (ended()) return;

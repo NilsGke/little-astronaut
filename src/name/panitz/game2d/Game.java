@@ -19,7 +19,7 @@ public interface Game {
   void init();
 
 
-  void doChecks(int deltaTime);
+  void doChecks(long deltaTime);
 
   void keyPressedReaction(KeyEvent keyEvent);
 

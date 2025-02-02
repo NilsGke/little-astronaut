@@ -9,7 +9,7 @@ public record Camera(Vertex pos, Vertex velocity, Vertex acceleration) {
     this(pos, new Vertex(0,0), new Vertex(0,0));
   }
 
-  public void update(int deltaTimeMs) {
+  public void update(long deltaTimeMs) {
 
     // decelerate cam
     this.acceleration().x *= 0.9;

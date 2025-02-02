@@ -198,7 +198,7 @@ public class Main implements Game {
   }
 
   @Override
-  public void doChecks(int deltaTime) {
+  public void doChecks(long deltaTime) {
     if (menu.isOpen()) return;
 
 

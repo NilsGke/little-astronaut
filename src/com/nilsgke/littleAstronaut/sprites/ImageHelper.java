@@ -1,6 +1,7 @@
 package com.nilsgke.littleAstronaut.sprites;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public class ImageHelper {
@@ -11,8 +12,7 @@ public class ImageHelper {
    * @return The converted BufferedImage
    */
   public static BufferedImage toBufferedImage(Image img) {
-    if (img instanceof BufferedImage)
-      return (BufferedImage) img;
+    if (img instanceof BufferedImage) return (BufferedImage) img;
 
 
     // Create a buffered image with transparency
@@ -25,6 +25,26 @@ public class ImageHelper {
 
     // Return the buffered image
     return bimage;
+  }
+
+  /**
+   * Rotates a given BufferedImage by 90 degrees clockwise.
+   *
+   * @param src the BufferedImage to be rotated
+   * @return a new BufferedImage that is the original image rotated by 90 degrees
+   */
+  public static BufferedImage rotateImage(BufferedImage src) {
+    int width = src.getWidth();
+    int height = src.getHeight();
+
+    @SuppressWarnings("SuspiciousNameCombination") BufferedImage dest = new BufferedImage(height, width, src.getType());
+
+    Graphics2D graphics2D = dest.createGraphics();
+    graphics2D.translate((height - width) / 2, (height - width) / 2);
+    graphics2D.rotate(Math.PI / 2, (double) height / 2, (double) width / 2);
+    graphics2D.drawRenderedImage(src, null);
+
+    return dest;
   }
 
 

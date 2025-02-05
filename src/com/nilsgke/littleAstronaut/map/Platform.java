@@ -10,12 +10,12 @@ import java.awt.image.BufferedImage;
 import java.util.Objects;
 
 public class Platform implements GameObj {
-  private final Vertex pos;
-  private final Vertex velocity;
-  private double height;
-  private double width;
-  private ImageTileset tileset;
-  private BufferedImage image;
+  protected final Vertex pos;
+  protected final Vertex velocity;
+  protected double height;
+  protected double width;
+  protected ImageTileset tileset;
+  protected BufferedImage image;
 
   private Platform(Vertex pos, Vertex velocity, double height, double width) {
     this.pos = pos;
@@ -25,7 +25,7 @@ public class Platform implements GameObj {
   }
 
   // platform with tile image
-  private Platform(Vertex pos, Vertex velocity, double width, double height, ImageTileset tileset) {
+  protected Platform(Vertex pos, Vertex velocity, double width, double height, ImageTileset tileset) {
     this.pos = pos;
     this.velocity = velocity;
     this.height = height;
@@ -55,7 +55,7 @@ public class Platform implements GameObj {
   }
 
   public void paintTo(Graphics g) {
-    if (tileset == null) {
+    if (tileset == null || image == null) {
       g.setColor(Color.GREEN);
       g.fillRect((int) pos.x, (int) pos.y, (int) width, (int) height);
       return;
@@ -65,7 +65,7 @@ public class Platform implements GameObj {
 
   }
 
-  private void generateImage() {
+  void generateImage() {
     image = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = image.createGraphics();
 

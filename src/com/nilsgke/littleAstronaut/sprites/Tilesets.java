@@ -15,6 +15,12 @@ public class Tilesets {
           "assets/platforms/stone/end-right.png"
   );
 
+  public static ImageTileset darkRedPlatform = new ImageTileset(
+          "assets/platforms/darkRed/darkRed.png",
+          "assets/platforms/darkRed/end-left.png",
+          "assets/platforms/darkRed/end-right.png"
+  );
+
   // floors
   public static ImageTileset grassFloor = new ImageTileset(
           "assets/floors/grass/grass-repeating.png",
@@ -32,6 +38,12 @@ public class Tilesets {
           "assets/floors/ice/ice-repeating.png",
           "assets/floors/ice/ice-end-left.png",
           "assets/floors/ice/ice-end-right.png"
+  );
+
+  public static ImageTileset netherFloor = new ImageTileset(
+          "assets/floors/nether/nether-repeating.png",
+          "assets/floors/nether/nether-end-left.png",
+          "assets/floors/nether/nether-end-right.png"
   );
 
 }

@@ -1,6 +1,7 @@
 package com.nilsgke.littleAstronaut.levels;
 
 import com.nilsgke.littleAstronaut.map.Platform;
+import com.nilsgke.littleAstronaut.map.Wall;
 import com.nilsgke.littleAstronaut.sprites.Animation;
 import com.nilsgke.littleAstronaut.sprites.Tilesets;
 import name.panitz.game2d.Vertex;
@@ -16,7 +17,7 @@ public class Level_4 extends Level {
   static {
     try {
       planetAnimation = new Animation(
-              ImageIO.read(new File("assets/planets/ice.png")),
+              ImageIO.read(new File("assets/planets/nether.png")),
               100, 20000, true);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -28,13 +29,12 @@ public class Level_4 extends Level {
   public Level_4() {
     super(
             new Platform[]{
-                    Platform.createHorizontalTilePlatform(-700, 0, 45, Tilesets.iceFloor),
-                    Platform.createHorizontalTilePlatform(250, -200, 2, Tilesets.stonePlatform),
-                    Platform.createHorizontalTilePlatform(450, -400, 1, Tilesets.stonePlatform),
-                    Platform.createHorizontalTilePlatform(230, -480, 1, Tilesets.stonePlatform),
-                    Platform.createHorizontalTilePlatform(-200, -480, 1, Tilesets.stonePlatform),
-                    Platform.createHorizontalTilePlatform(-350, -730, 1, Tilesets.stonePlatform),
-                    Platform.createHorizontalTilePlatform(-100, -930, 10, Tilesets.stonePlatform),
+                    Platform.createHorizontalTilePlatform(-700, 0, 30, Tilesets.netherFloor),
+                    Platform.createHorizontalTilePlatform(250, -170, 2, Tilesets.darkRedPlatform),
+                    Platform.createHorizontalTilePlatform(150, -420, 1, Tilesets.darkRedPlatform),
+                    Platform.createHorizontalTilePlatform(350, -460, 2, Tilesets.darkRedPlatform),
+                    Platform.createHorizontalTilePlatform(220, -600, 3, Tilesets.darkRedPlatform),
+                    Wall.createVerticalTileWall(600, -700, 3, Tilesets.darkRedPlatform),
             },
             new Vertex(0, -30),
             new Vertex(400, -1065),
@@ -49,10 +49,12 @@ public class Level_4 extends Level {
   }
 
   public Color backgroundColor() {
-    return new Color(185, 233, 255);
+    return new Color(131, 34, 26);
   }
 
   @Override
   public void additionalPaint(Graphics g) {
+    g.setColor(new Color(131, 34, 26, 80));
+    g.fillRect(-300,-190,200, 190);
   }
 }

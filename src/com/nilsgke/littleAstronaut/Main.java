@@ -36,7 +36,7 @@ public class Main implements Game {
   private int height;
 
   private Level currentLevel;
-  private byte currentLevelIndex = 4;
+  private byte currentLevelIndex = 1;
   private boolean gameFinished = false;
 
   private boolean DEBUG_MODE = false;

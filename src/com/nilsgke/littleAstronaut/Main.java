@@ -188,13 +188,10 @@ public class Main implements Game {
 
     // jump state bar
     g2d.setColor(Color.BLUE);
-    g2d.drawRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) player.width(), 5);
-    g2d.fillRect((int) player.pos().x, (int) (player.pos().y + player.height()), (int) ((player.width() / MAX_JUMP) * Math.min(jumpValue, MAX_JUMP)), 5);
-
-
-    // paint finished zone
-    g2d.setColor(Color.MAGENTA);
-    g2d.drawRect((int) currentLevel.completeZone.pos().x, (int) currentLevel.completeZone.pos().y, (int) currentLevel.completeZone.width(), (int) currentLevel.completeZone.height());
+    final int BAR_WIDTH = 100;
+    final int BAR_HEIGHT = 5;
+    g2d.drawRect(width / 2 - BAR_WIDTH / 2, height - BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT);
+    g2d.fillRect(width / 2 - BAR_WIDTH / 2, height - BAR_HEIGHT, (int) (BAR_WIDTH * (Math.min(jumpValue, MAX_JUMP) / MAX_JUMP)), BAR_HEIGHT);
   }
 
   @Override

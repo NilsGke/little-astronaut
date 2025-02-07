@@ -1,5 +1,6 @@
 package com.nilsgke.littleAstronaut.levels;
 
+import com.nilsgke.littleAstronaut.Player;
 import com.nilsgke.littleAstronaut.sprites.Animation;
 import com.nilsgke.littleAstronaut.sprites.ImageTileset;
 import com.nilsgke.littleAstronaut.map.Platform;
@@ -68,4 +69,7 @@ public class Level_1 extends Level {
     Text.paintTo(g, "wenn du bei der Rakete angekommen bist.", 2900, 330, 3);
 
   }
+
+  @Override
+  public void additionalChecks(long deltaTime, Player p) {}
 }

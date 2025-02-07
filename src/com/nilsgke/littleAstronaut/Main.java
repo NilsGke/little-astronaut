@@ -310,6 +310,8 @@ public class Main implements Game {
     if (playerVelocity.x != 0.0)
       player.lastDirection = player.velocity.x > 0 ? Player.XDirection.RIGHT : Player.XDirection.LEFT;
 
+    currentLevel.additionalChecks(deltaTime, player);
+
 
     // update camera
     // calc distance from cam to player
@@ -350,7 +352,6 @@ public class Main implements Game {
     // if player is hosting server, add player position
     if (this.wsServer.getStatus() == WSServer.Status.RUNNING)
       this.wsServer.updateOwnPosition(this.currentLevelIndex, this.player.pos.x, this.player.pos.y, this.player.velocity.x, this.player.velocity.y);
-
 
 
   }

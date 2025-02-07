@@ -148,4 +148,5 @@ public abstract class Level {
   }
 
   abstract public void additionalPaint(Graphics g);
+  abstract public void additionalChecks(long deltaTime, Player p);
 }

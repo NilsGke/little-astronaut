@@ -1,5 +1,6 @@
 package com.nilsgke.littleAstronaut.levels;
 
+import com.nilsgke.littleAstronaut.Player;
 import com.nilsgke.littleAstronaut.map.Platform;
 import com.nilsgke.littleAstronaut.sprites.Animation;
 import com.nilsgke.littleAstronaut.sprites.Text;
@@ -64,4 +65,7 @@ public class FinishLevel extends Level {
     Level.paintPlanetSign(g, new Vertex(100, -200), Level_3.planetAnimation);
     Level.paintPlanetSign(g, new Vertex(300, -260), Level_4.planetAnimation);
   }
+
+  @Override
+  public void additionalChecks(long deltaTime, Player p) {}
 }

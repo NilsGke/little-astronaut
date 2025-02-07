@@ -1,5 +1,6 @@
 package com.nilsgke.littleAstronaut.levels;
 
+import com.nilsgke.littleAstronaut.Player;
 import com.nilsgke.littleAstronaut.map.Platform;
 import com.nilsgke.littleAstronaut.map.Wall;
 import com.nilsgke.littleAstronaut.sprites.Animation;
@@ -23,7 +24,6 @@ public class Level_4 extends Level {
       throw new RuntimeException(e);
     }
   }
-
 
 
   public Level_4() {
@@ -55,6 +55,10 @@ public class Level_4 extends Level {
   @Override
   public void additionalPaint(Graphics g) {
     g.setColor(new Color(131, 34, 26, 80));
-    g.fillRect(-300,-190,200, 190);
+    g.fillRect(-300, -190, 200, 190);
+  }
+
+  @Override
+  public void additionalChecks(long deltaTime, Player p) {
   }
 }

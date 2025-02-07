@@ -1,6 +1,7 @@
 package com.nilsgke.littleAstronaut.connection;
 
 import com.nilsgke.littleAstronaut.Player;
+import com.nilsgke.littleAstronaut.Toasts.Toaster;
 import name.panitz.game2d.Vertex;
 
 import java.io.*;
@@ -82,6 +83,7 @@ public class WSClient {
 
       status = Status.CONNECTED;
       System.out.println("Connected to WebSocket server");
+      Toaster.info(String.format("Mit %s:%s verbunden", host, port), 4000);
 
     } catch (Exception e) {
       System.out.println("Connection failed: " + e.getMessage());
@@ -92,6 +94,7 @@ public class WSClient {
   }
 
   public void disconnect() {
+    Toaster.info("Verbindung getrennt", 4000);
     try {
       if (in != null) in.close();
       if (out != null) out.close();

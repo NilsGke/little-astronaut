@@ -1,5 +1,7 @@
 package com.nilsgke.littleAstronaut.connection;
 
+import com.nilsgke.littleAstronaut.Toasts.Toaster;
+
 import java.io.*;
 import java.net.*;
 import java.security.NoSuchAlgorithmException;
@@ -50,6 +52,7 @@ public class WSServer {
         System.out.println("created socket");
         status = Status.RUNNING;
 
+        Toaster.info("Server gestartet", 4000);
 
         updateUriInBackground();
         System.out.println("starting broadcast");
@@ -113,6 +116,7 @@ public class WSServer {
 
       System.out.println("WebSocket server stopped.");
 
+      Toaster.info("Server gestopt", 4000);
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -190,6 +194,8 @@ public class WSServer {
         String clientIp = clientSocket.getInetAddress().getHostAddress();
         System.out.println("Client connected: " + clientIp);
 
+        Toaster.info("Spieler beigetreten", 4000);
+
         // Perform WebSocket handshake
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line;
@@ -227,6 +233,7 @@ public class WSServer {
         e.printStackTrace();
       } finally {
         System.out.println("Client disconnected: " + clientSocket.getLocalAddress());
+        Toaster.info("Spieler verlassen", 4000);
         try {
           clientSocket.close();
         } catch (IOException e) {

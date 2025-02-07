@@ -1,6 +1,7 @@
 package com.nilsgke.littleAstronaut;
 
 
+import com.nilsgke.littleAstronaut.Toasts.Toaster;
 import com.nilsgke.littleAstronaut.connection.WSClient;
 import com.nilsgke.littleAstronaut.connection.WSData;
 import com.nilsgke.littleAstronaut.connection.WSServer;
@@ -172,6 +173,8 @@ public class Main implements Game {
 
     // ONLY HUD AND UI FROM HERE ON
     g2d.translate(-offsetX, -offsetY); // reset offset to fix element to the screen
+
+    Toaster.paintToastsTo(g2d, width, height);
 
     currentLevel.paintBlackScreen(g2d, (int) camera.pos().x, (int) camera.pos().y, width, height);
   }

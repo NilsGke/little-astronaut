@@ -34,15 +34,15 @@ public abstract class Level {
 
   private static final BufferedImage rocketImage;
   private static final BufferedImage planetSign;
-  private static final Animation rocketEnterAnimation;
+  private static final Animation fireAnimation;
 
   static {
     try {
       rocketImage = ImageIO.read(new File("assets/rocket/rocket.png"));
 
-      BufferedImage rocketEnterAnimationImage = ImageIO.read(new File("assets/rocket/rocket-enter-animation.png"));
-      rocketEnterAnimationImage = ImageHelper.toBufferedImage(rocketEnterAnimationImage.getScaledInstance(rocketEnterAnimationImage.getWidth() * 2, rocketEnterAnimationImage.getHeight() * 2, Image.SCALE_DEFAULT));
-      rocketEnterAnimation = new Animation(rocketEnterAnimationImage, 6, 500, true);
+      BufferedImage fireAnimationImage = ImageIO.read(new File("assets/rocket/fire-animation.png"));
+      fireAnimationImage = ImageHelper.toBufferedImage(fireAnimationImage.getScaledInstance(fireAnimationImage.getWidth() * 2, fireAnimationImage.getHeight() * 2, Image.SCALE_DEFAULT));
+      fireAnimation = new Animation(fireAnimationImage, 19, 1000, true);
 
       var planetSignImage = ImageIO.read(new File("assets/planets/planet-sign.png"));
       planetSign = ImageHelper.toBufferedImage(planetSignImage.getScaledInstance(
@@ -66,18 +66,18 @@ public abstract class Level {
     this.rocketPos = rocketPos;
     this.planetSignPos = planetSignPos;
     this.planetAnimation = planetAnimation;
-    this.completeZone = new Platform((int) rocketPos.x + 30, (int) rocketPos.y, 50.0, 100.0);
+    this.completeZone = new Platform((int) rocketPos.x, (int) rocketPos.y, rocketImage.getWidth() * 4, rocketImage.getHeight() * 4);
 
     this.blackScreenOpacity = 255;
     Timer timer = new Timer();
     TimerTask task = new TimerTask() {
       @Override
       public void run() {
-        if(blackScreenOpacity > 0) blackScreenOpacity--;
+        if (blackScreenOpacity > 0) blackScreenOpacity--;
         else timer.cancel();
       }
     };
-    timer.schedule(task, 0, 1000/255);
+    timer.schedule(task, 0, 1000 / 255);
   }
 
   public void checkIfInCompletionZone(Player player) {
@@ -123,14 +123,18 @@ public abstract class Level {
   }
 
   public void paintRocket(Graphics g) {
-    if (!finishAnimation && !finished)
+    if (!finished && animationState != AnimationState.FLYING)
       g.drawImage(rocketImage, (int) this.rocketPos.x, (int) this.rocketPos.y, rocketImage.getWidth() * 4, rocketImage.getHeight() * 4, null);
-    else
-      // FIXME: why do i have to offset the image if it is just two times the size of the og one??
-      rocketEnterAnimation.paintTo(g,
-              (int) (completeZone.pos().x - (rocketEnterAnimation.frameWidth() * 2.0 - completeZone.width()) / 2.0) + 1,
-              (int) (completeZone.pos().y - (rocketEnterAnimation.frameHeight() * 2.0 - completeZone.height()) / 2.0) + 2
+
+    else {
+      fireAnimation.paintTo(g,
+              (int) (completeZone.pos().x + completeZone.width() / 2 - rocketImage.getWidth() * 4),
+              (int) (completeZone.pos().y + completeZone.height() - 18)
       );
+
+      g.drawImage(rocketImage, (int) this.completeZone.pos().x, (int) this.completeZone.pos().y, rocketImage.getWidth() * 4, rocketImage.getHeight() * 4, null);
+
+    }
   }
 
   public void paintPlanetSign(Graphics g) {
@@ -144,9 +148,10 @@ public abstract class Level {
 
   public void paintBlackScreen(Graphics g, int x, int y, int width, int height) {
     g.setColor(new Color(0, 0, 0, blackScreenOpacity));
-    g.fillRect(0,0, width, height);
+    g.fillRect(0, 0, width, height);
   }
 
   abstract public void additionalPaint(Graphics g);
+
   abstract public void additionalChecks(long deltaTime, Player p);
 }

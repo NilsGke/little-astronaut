@@ -67,7 +67,7 @@ public class Player implements GameObj {
     }
 
     if (velocity.y != 0) { // jumping
-      boolean goingLeft = this.velocity.x < 0;
+      boolean goingLeft = this.velocity.x < 0 || lastDirection == XDirection.LEFT ;
       if (velocity.y > .5) animation_jump.paintFrameTo(1, g, (int) this.pos().x, (int) this.pos().y - 10, goingLeft); // going up
       else if (velocity.y < -0.5) animation_jump.paintFrameTo(3, g, (int) this.pos().x, (int) this.pos().y - 10, goingLeft); // falling down
       else animation_jump.paintFrameTo(2, g, (int) this.pos().x, (int) this.pos().y - 10, goingLeft); // at peak

@@ -44,8 +44,9 @@ public class Level_1 extends Level {
                     Platform.createHorizontalTilePlatform(1500 - 200, 690, 30, Tilesets.grassFloor),
                     Platform.createHorizontalTilePlatform(2300, 600, 60, Tilesets.grassFloor),
             },
-            new Vertex(0, 700),
-            new Vertex(3900, 465),
+            new Vertex(3700, 500),
+//            new Vertex(0, 700),
+            new Vertex(3900, 430),
             new Vertex( -300, 500),
             planetAnimation
     );

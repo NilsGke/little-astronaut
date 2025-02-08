@@ -19,11 +19,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-enum Controls {
-  JUMP_KING, JETPACK
-}
 
 public class Main implements Game {
+  enum Controls {JUMP_KING, JETPACK}
+
   static final int PLAYER_SPEED = 4;
   static final double GRAVITY = 1.5;
   static final double MIN_JUMP = 6;
@@ -108,7 +107,7 @@ public class Main implements Game {
 
   @Override
   public void paintTo(Graphics g) {
-    if (menu.isOpen()) {
+    if (gameImage != null && menu.isOpen()) {
       if (!gameImageBlurred) { // only blur image once and then reuse the blurred one
         gameImage = Menu.applyBlur(gameImage, 4, 0.3f);
         gameImageBlurred = true;
@@ -123,7 +122,7 @@ public class Main implements Game {
     gameImageBlurred = false;
     Graphics2D g2d = gameImage.createGraphics();
     drawGame(g2d);
-    if (DEBUG_MODE) drawDebugStuff(g2d);
+    if (DEBUG_MODE) drawDebugUI(g2d);
     g.drawImage(gameImage, 0, 0, null);
 
   }
@@ -150,26 +149,26 @@ public class Main implements Game {
 
     g2d.setColor(Color.magenta);
     // draw WSClient players
-    if (wsClient.getStatus() == WSClient.Status.CONNECTED)
-      for (var entry : wsClient.players.entrySet()) {
-        var remoteId = entry.getKey();
-        if (remoteId != this.player.id) { // prevent painting own player
-          var remotePlayer = entry.getValue();
-          remotePlayer.paintTo(g2d);
-        }
+    if (wsClient.getStatus() == WSClient.Status.CONNECTED) for (var entry : wsClient.players.entrySet()) {
+      var remoteId = entry.getKey();
+      if (remoteId != this.player.id) { // prevent painting own player
+        var remotePlayer = entry.getValue();
+        remotePlayer.paintTo(g2d);
       }
+    }
 
 
     // draw WSServer players
-    if (wsServer.getStatus() == WSServer.Status.RUNNING)
-      for (var remotePlayer : WSServer.players.entrySet()) {
-        var playerData = remotePlayer.getValue();
-        if (playerData.id() != 0) g2d.drawRect((int) playerData.x(), (int) playerData.y(), 20, 20);
-      }
+    if (wsServer.getStatus() == WSServer.Status.RUNNING) for (var remotePlayer : WSServer.players.entrySet()) {
+      var playerData = remotePlayer.getValue();
+      if (playerData.id() != 0) g2d.drawRect((int) playerData.x(), (int) playerData.y(), 20, 20);
+    }
 
     if (!currentLevel.finished && (currentLevel.animationState != Level.AnimationState.FLYING)) player().paintTo(g2d);
 
     currentLevel.paintRocket(g2d);
+
+    if (DEBUG_MODE) drawDebugStuff(g2d);
 
     // ONLY HUD AND UI FROM HERE ON
     g2d.translate(-offsetX, -offsetY); // reset offset to fix element to the screen
@@ -180,21 +179,31 @@ public class Main implements Game {
   }
 
   private void drawDebugStuff(Graphics2D g2d) {
+    // jump state bar
+    g2d.setColor(Color.MAGENTA);
+    final int BAR_WIDTH = (int) player.width;
+    final int BAR_HEIGHT = 5;
+    g2d.drawRect((int) (player.pos.x + player.width / 2 - BAR_WIDTH / 2.0), (int) (player.pos.y + player.height), BAR_WIDTH, BAR_HEIGHT);
+    g2d.fillRect((int) (player.pos.x + player.width / 2 - BAR_WIDTH / 2.0), (int) (player.pos.y + player.height), (int) (BAR_WIDTH * (Math.min(jumpValue, MAX_JUMP) / MAX_JUMP)), BAR_HEIGHT);
+
+    g2d.setColor(Color.RED);
+    g2d.drawRect(
+            (int) currentLevel.completeZone.pos().x,
+            (int) currentLevel.completeZone.pos().y,
+            (int) currentLevel.completeZone.width(),
+            (int) currentLevel.completeZone.height()
+    );
+  }
+
+  private void drawDebugUI(Graphics2D g2d) {
     // draw camera margin
-    g2d.setColor(Color.BLACK);
+    g2d.setColor(Color.YELLOW);
     int camMarginTop = (int) (height() * CAM_MARGIN_PERCENTAGE);
     int camMarginLeft = (int) (width() * CAM_MARGIN_PERCENTAGE);
     g2d.drawLine(0, camMarginTop, width(), camMarginTop);
     g2d.drawLine(0, height() - camMarginTop, width(), height() - camMarginTop);
     g2d.drawLine(camMarginLeft, 0, camMarginLeft, height());
     g2d.drawLine(width() - camMarginLeft, 0, width() - camMarginLeft, height());
-
-    // jump state bar
-    g2d.setColor(Color.BLUE);
-    final int BAR_WIDTH = 100;
-    final int BAR_HEIGHT = 5;
-    g2d.drawRect(width / 2 - BAR_WIDTH / 2, height - BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT);
-    g2d.fillRect(width / 2 - BAR_WIDTH / 2, height - BAR_HEIGHT, (int) (BAR_WIDTH * (Math.min(jumpValue, MAX_JUMP) / MAX_JUMP)), BAR_HEIGHT);
   }
 
   @Override
@@ -279,7 +288,7 @@ public class Main implements Game {
 
     // jump force
     if (controls == Controls.JUMP_KING && onGround && pressedKeys.contains(KeyEvent.VK_SPACE) && canJump)
-      jumpValue += PLAYER_SPEED * deltaTime / 100.0;
+      jumpValue += PLAYER_SPEED * deltaTime / 150.0;
 
     // jump jump-king
     if (!currentLevel.finishAnimation && onGround && canJump && jumpValue > 0 && controls == Controls.JUMP_KING && !pressedKeys.contains(KeyEvent.VK_SPACE)) {

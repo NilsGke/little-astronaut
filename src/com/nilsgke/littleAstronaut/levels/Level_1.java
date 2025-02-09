@@ -42,11 +42,10 @@ public class Level_1 extends Level {
             new Platform[]{
                     Platform.createHorizontalTilePlatform(-600, 700, 60, Tilesets.grassFloor),
                     Platform.createHorizontalTilePlatform(1500 - 200, 690, 30, Tilesets.grassFloor),
-                    Platform.createHorizontalTilePlatform(2300, 600, 60, Tilesets.grassFloor),
+                    Platform.createHorizontalTilePlatform(2300, 600, 80, Tilesets.grassFloor),
             },
-            new Vertex(3700, 500),
-//            new Vertex(0, 700),
-            new Vertex(3900, 430),
+            new Vertex(0, 700),
+            new Vertex(4300, 440),
             new Vertex( -300, 500),
             planetAnimation
     );
@@ -54,7 +53,7 @@ public class Level_1 extends Level {
 
   public void additionalPaint(Graphics g) {
     Text.paintTo(g, "Hallo kleiner Astronaut!", -470, 300, 5);
-    Text.paintTo(g, "Du wurdest auserwählt um 6", -330, 370, 3);
+    Text.paintTo(g, "Du wurdest auserwählt um 3", -330, 370, 3);
     Text.paintTo(g, "verschiedene Planeten zu erkunden.", -400, 400, 3);
     Text.paintTo(g, "Laufe mit a und d oder den Pfeiltasten ->", -350, 470, 2);
 
@@ -66,8 +65,11 @@ public class Level_1 extends Level {
     Text.paintTo(g, "Um höher zu springen musst du", 1750, 400, 3);
     Text.paintTo(g, "die Leertaste länger drücken", 1750, 430, 3);
 
-    Text.paintTo(g, "Du hast das Level geschafft,", 3000, 300, 3);
-    Text.paintTo(g, "wenn du bei der Rakete angekommen bist.", 2900, 330, 3);
+    Text.paintTo(g, "Übrigens kannst du mir escape", 2700, 300, 2);
+    Text.paintTo(g, "den multiplayer aktivieren", 2750, 330, 2);
+
+    Text.paintTo(g, "Du hast das Level geschafft,", 3600, 300, 3);
+    Text.paintTo(g, "wenn du bei der Rakete angekommen bist.", 3500, 330, 3);
 
   }
 

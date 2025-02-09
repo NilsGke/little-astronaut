@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class Menu {
-  private boolean isOpen = true;
+  private boolean isOpen = false;
   public Clickable[] clickables;
   private InputBox ipInput;
 

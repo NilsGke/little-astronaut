@@ -3,23 +3,30 @@ package com.nilsgke.littleAstronaut.levels;
 import com.nilsgke.littleAstronaut.Player;
 import com.nilsgke.littleAstronaut.map.Platform;
 import com.nilsgke.littleAstronaut.sprites.Animation;
+import com.nilsgke.littleAstronaut.sprites.ImageHelper;
 import com.nilsgke.littleAstronaut.sprites.Text;
 import com.nilsgke.littleAstronaut.sprites.Tilesets;
 import name.panitz.game2d.Vertex;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 public class FinishLevel extends Level {
   private static final Animation planetAnimation;
+  private static final BufferedImage backdrop;
 
   static {
     try {
       planetAnimation = new Animation(
               ImageIO.read(new File("assets/planets/earth.png")),
               100, 20000, true);
+
+      BufferedImage bd = ImageIO.read(new File("assets/backdrops/finishLevel.png"));
+      System.out.println("read finish level bd");
+      backdrop = ImageHelper.toBufferedImage(bd.getScaledInstance(bd.getWidth() *2, bd.getHeight() *2, Image.SCALE_DEFAULT));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -40,7 +47,8 @@ public class FinishLevel extends Level {
             new Vertex(0, 65),
             new Vertex(0, 1000),
             new Vertex(-600, 300),
-            planetAnimation
+            planetAnimation,
+            backdrop
     );
   }
 
@@ -55,10 +63,12 @@ public class FinishLevel extends Level {
   }
 
   @Override
-  public void additionalPaint(Graphics g) {
-    Text.paintTo(g, "Vielen Dank fürs Spielen!", -400, -380, 4);
-    Text.paintTo(g, "Das wars. Du hast alle 6 Planeten erkundigt.", -335, -310, 2);
-    Text.paintTo(g, "- Nils Goeke", -100, -270, 2);
+  public void additionalPaint(Graphics2D g) {
+    Color bgColor = new Color(0,0,0,50);
+    Text.paintToWithBackgroundColor(g, "Vielen Dank fürs Spielen!", -400, -380, 4, bgColor);
+    Text.paintToWithBackgroundColor(g, "Das wars. Du hast alle Planeten erkundigt.", -335, -310, 2, bgColor);
+    Text.paintToWithBackgroundColor(g, "- Nils Goeke", -100, -270, 2, bgColor);
+    Text.paintToWithBackgroundColor(g, "(github.com/NilsGke)", -90, -240, 1, bgColor);
 
     Level.paintPlanetSign(g, new Vertex(-500, -260), Level_1.planetAnimation);
     Level.paintPlanetSign(g, new Vertex(-300, -200), Level_2.planetAnimation);

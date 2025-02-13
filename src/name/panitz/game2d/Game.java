@@ -43,7 +43,7 @@ public interface Game {
   }
 
 
-  default void paintTo(Graphics g){
+  default void paintTo(Graphics2D g){
     for (var gos:goss()) gos.forEach( go -> go.paintTo(g));
     player().paintTo(g);
   }

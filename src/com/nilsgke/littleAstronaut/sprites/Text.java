@@ -2,6 +2,7 @@ package com.nilsgke.littleAstronaut.sprites;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class Text {
     }
   }
 
-  public static void paintTo(Graphics g, String text, int x, int y, int scale) {
+  public static void paintTo(Graphics2D g, String text, int x, int y, int scale) {
     paintTo(g, text, x, y, scale, Color.WHITE);
   }
 
@@ -52,8 +53,16 @@ public class Text {
     return CHAR_WIDTH * scale;
   }
 
+  public static void paintTo(Graphics2D g, String text, int x, int y, int scale, Color color) {
+    paintTo(g, text, x, y, scale, color, new Color(0,0,0,0));
+  }
+
+  public static void paintToWithBackgroundColor(Graphics2D g, String text, int x, int y, int scale,  Color backgroundColor) {
+    paintTo(g, text, x, y, scale, Color.WHITE, backgroundColor);
+  }
+
   // Static method to paint text at a specified position
-  public static void paintTo(Graphics g, String text, int x, int y, int scale, Color color) {
+  public static void paintTo(Graphics2D g, String text, int x, int y, int scale, Color color, Color backgroundColor) {
     text = text.toLowerCase().replaceAll("ä", "ae").replaceAll("ö", "oe").replaceAll("ü", "ue");
 
     // Check if the combined image is already cached
@@ -63,6 +72,10 @@ public class Text {
       combinedImage = createCombinedImage(text, scale, color);
       combinedImageCache.put(key, combinedImage);
     }
+
+    g.setColor(backgroundColor);
+    int spaceCount = text.length() - text.replace(" ", "").length();
+    g.fillRoundRect(x,y, (int) (combinedImage.getWidth() - spaceCount * getCharWidth(scale) * 0.3), combinedImage.getHeight(),8,8);
 
     // Draw the combined image
     g.drawImage(combinedImage, x, y, null);
@@ -99,7 +112,7 @@ public class Text {
   private static BufferedImage getColoredCharacter(char character, Color color) {
     // check cache first
     BufferedImage cachedImage = coloredCharacterCache.get(new CharColorKey(character, color));
-    if(cachedImage != null)
+    if (cachedImage != null)
       return cachedImage;
 
 

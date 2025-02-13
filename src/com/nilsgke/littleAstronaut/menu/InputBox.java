@@ -33,9 +33,9 @@ public class InputBox {
     this.allowedCharacters = allowedCharacters;
   }
 
-  public void paintTo(Graphics g) {
+  public void paintTo(Graphics2D g) {
     g.setColor(focused ? Color.WHITE : Color.GRAY);
-    if (g instanceof Graphics2D g2d) g2d.setStroke(new BasicStroke(2));
+    g.setStroke(new BasicStroke(2));
     g.drawRect(x, y, width + padding * 2, height + padding * 2);
 
     if (content.isEmpty()) Text.paintTo(g, placeholder, x + padding, y + padding, textScale, Color.GRAY);

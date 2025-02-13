@@ -67,7 +67,8 @@ public class SwingScreen extends JPanel{
 
   @Override protected void paintComponent(Graphics g) {
     super.paintComponent(g);
-    logic.paintTo(g);
+    Graphics2D g2d = (Graphics2D) g;
+    logic.paintTo(g2d);
   }
 }
 

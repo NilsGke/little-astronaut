@@ -32,11 +32,11 @@ public class Main implements Game {
 
   Player player;
   List<List<? extends GameObj>> gameObjects;
-  private int width;
-  private int height;
+  public static int WIDTH = 1000;
+  public static int HEIGHT = 700;
 
   private Level currentLevel;
-  private byte currentLevelIndex = 1;
+  private byte currentLevelIndex = 5;
   private boolean gameFinished = false;
 
   private boolean DEBUG_MODE = false;
@@ -65,9 +65,6 @@ public class Main implements Game {
   }
 
   public Main() {
-    this.height = 700;
-    this.width = 1000;
-
     this.player = new Player((byte) 0, new Vertex(0, 0), new Vertex(0, 0));
     this.camera = new Camera(new Vertex(player.pos().x, player.pos().y));
     this.gameObjects = new ArrayList<>();
@@ -75,8 +72,8 @@ public class Main implements Game {
     this.wsClient = new WSClient(this.player);
     this.wsServer = new WSServer();
 
-    this.menu = new Menu(width, height, wsClient, wsServer);
-    this.gameImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    this.menu = new Menu(WIDTH, HEIGHT, wsClient, wsServer);
+    this.gameImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 
     loadLevel(currentLevelIndex);
   }
@@ -106,7 +103,7 @@ public class Main implements Game {
   }
 
   @Override
-  public void paintTo(Graphics g) {
+  public void paintTo(Graphics2D g) {
     if (gameImage != null && menu.isOpen()) {
       if (!gameImageBlurred) { // only blur image once and then reuse the blurred one
         gameImage = Menu.applyBlur(gameImage, 4, 0.3f);
@@ -114,7 +111,7 @@ public class Main implements Game {
       }
 
       g.drawImage(gameImage, 0, 0, null); // draw blurred game image
-      menu.paintTo(g, width, height);
+      menu.paintTo(g, WIDTH, HEIGHT);
       return;
     }
 
@@ -135,6 +132,9 @@ public class Main implements Game {
     int offsetY = -(int) (camera.pos().y - height() / 2.0);
 
     g2d.translate(offsetX, offsetY);
+
+    currentLevel.paintBackdropTo(g2d, camera.pos());
+
 
     g2d.setColor(Color.WHITE);
     for (var gos : goss()) gos.forEach(go -> go.paintTo(g2d));
@@ -173,9 +173,9 @@ public class Main implements Game {
     // ONLY HUD AND UI FROM HERE ON
     g2d.translate(-offsetX, -offsetY); // reset offset to fix element to the screen
 
-    Toaster.paintToastsTo(g2d, width, height);
+    Toaster.paintToastsTo(g2d, WIDTH, HEIGHT);
 
-    currentLevel.paintBlackScreen(g2d, (int) camera.pos().x, (int) camera.pos().y, width, height);
+    currentLevel.paintBlackScreen(g2d, (int) camera.pos().x, (int) camera.pos().y, WIDTH, HEIGHT);
   }
 
   private void drawDebugStuff(Graphics2D g2d) {
@@ -406,22 +406,22 @@ public class Main implements Game {
 
   @Override
   public int width() {
-    return this.width;
+    return this.WIDTH;
   }
 
   @Override
   public int height() {
-    return this.height;
+    return this.HEIGHT;
   }
 
   @Override
   public void setHeight(int height) {
-    this.height = height;
+    this.HEIGHT = height;
   }
 
   @Override
   public void setWidth(int width) {
-    this.width = width;
+    this.WIDTH = width;
   }
 
   @Override

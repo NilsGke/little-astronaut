@@ -1,6 +1,7 @@
 
 package com.nilsgke.littleAstronaut.levels;
 
+import com.nilsgke.littleAstronaut.Main;
 import com.nilsgke.littleAstronaut.Player;
 import com.nilsgke.littleAstronaut.map.Platform;
 import com.nilsgke.littleAstronaut.sprites.Animation;
@@ -31,6 +32,7 @@ public abstract class Level {
   private final Vertex planetSignPos;
   private final Animation planetAnimation;
   private short blackScreenOpacity = 0;
+  protected final BufferedImage backdrop;
 
   private static final BufferedImage rocketImage;
   private static final BufferedImage planetSign;
@@ -60,13 +62,14 @@ public abstract class Level {
 
   abstract public Color backgroundColor();
 
-  public Level(Platform[] platforms, Vertex startPos, Vertex rocketPos, Vertex planetSignPos, Animation planetAnimation) {
+  public Level(Platform[] platforms, Vertex startPos, Vertex rocketPos, Vertex planetSignPos, Animation planetAnimation, BufferedImage backdrop) {
     this.platforms = platforms;
     this.startPos = startPos;
     this.rocketPos = rocketPos;
     this.planetSignPos = planetSignPos;
     this.planetAnimation = planetAnimation;
     this.completeZone = new Platform((int) rocketPos.x, (int) rocketPos.y, rocketImage.getWidth() * 4, rocketImage.getHeight() * 4);
+    this.backdrop = backdrop;
 
     this.blackScreenOpacity = 255;
     Timer timer = new Timer();
@@ -128,7 +131,7 @@ public abstract class Level {
 
     else {
       fireAnimation.paintTo(g,
-              (int) (completeZone.pos().x + completeZone.width() / 2 - rocketImage.getWidth() * 4),
+              (int) (completeZone.pos().x + completeZone.width() / 2 - fireAnimation.frameWidth() - 2),
               (int) (completeZone.pos().y + completeZone.height() - 18)
       );
 
@@ -151,7 +154,21 @@ public abstract class Level {
     g.fillRect(0, 0, width, height);
   }
 
-  abstract public void additionalPaint(Graphics g);
+  public void paintBackdropTo(Graphics g, Vertex camPosition) {
+    double x = camPosition.x - Main.WIDTH / 2.0;
+    double y = camPosition.y + Main.HEIGHT - backdrop.getHeight();
+
+    // offset
+    x -= camPosition.x * .7;
+    y -= camPosition.y * .7;
+
+
+    g.drawImage(backdrop, (int) x - backdrop.getWidth(), (int) y, null);
+    g.drawImage(backdrop, (int) x, (int) y, null);
+    g.drawImage(backdrop, (int) x + backdrop.getWidth(), (int) y, null);
+  }
+
+  abstract public void additionalPaint(Graphics2D g);
 
   abstract public void additionalChecks(long deltaTime, Player p);
 }

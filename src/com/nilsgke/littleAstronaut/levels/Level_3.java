@@ -4,11 +4,13 @@ import com.nilsgke.littleAstronaut.Player;
 import com.nilsgke.littleAstronaut.map.MovingPlatform;
 import com.nilsgke.littleAstronaut.map.Platform;
 import com.nilsgke.littleAstronaut.sprites.Animation;
+import com.nilsgke.littleAstronaut.sprites.ImageHelper;
 import com.nilsgke.littleAstronaut.sprites.Tilesets;
 import name.panitz.game2d.Vertex;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -16,12 +18,16 @@ import java.util.Arrays;
 public class Level_3 extends Level {
   public static final Animation planetAnimation;
   private MovingPlatform[] movingPlatforms;
+  private static final BufferedImage backdrop;
 
   static {
     try {
       planetAnimation = new Animation(
               ImageIO.read(new File("assets/planets/ice.png")),
               100, 20000, true);
+
+      BufferedImage bd = ImageIO.read(new File("assets/backdrops/level_3.png"));
+      backdrop = ImageHelper.toBufferedImage(bd.getScaledInstance(bd.getWidth() *2, bd.getHeight() *2, Image.SCALE_DEFAULT));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -42,9 +48,10 @@ public class Level_3 extends Level {
                     MovingPlatform.createHorizontalMovingTilePlatform(-400, -480, 1, 0, -350, 8000, Tilesets.stonePlatform),
             },
             new Vertex(0, -30),
-            new Vertex(-1100, -1065),
+            new Vertex(-1100, -1090),
             new Vertex(-300, -200),
-            planetAnimation
+            planetAnimation,
+            backdrop
     );
 
     this.movingPlatforms = Arrays
@@ -64,7 +71,7 @@ public class Level_3 extends Level {
   }
 
   @Override
-  public void additionalPaint(Graphics g) {
+  public void additionalPaint(Graphics2D g) {
   }
 
   @Override

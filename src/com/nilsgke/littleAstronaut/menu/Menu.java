@@ -104,7 +104,7 @@ public class Menu {
     if (this.ipInput.isFocused() && this.wsClient.getStatus() == WSClient.Status.ERROR) this.wsClient.disconnect();
   }
 
-  public void paintTo(Graphics g, int width, int height) {
+  public void paintTo(Graphics2D g, int width, int height) {
     if (!isOpen) return;
     g.setColor(new Color(0, 0, 0, 150));
     g.fillRect(0, 0, width, height);
@@ -113,7 +113,7 @@ public class Menu {
     g.setColor(new Color(0, 0, 0, 50));
     g.fillRect(width - 50 - 30, 30, 50, 50);
     g.setColor(Color.BLACK);
-    if (g instanceof Graphics2D g2d) g2d.setStroke(new BasicStroke(5));
+    g.setStroke(new BasicStroke(5));
     g.drawRoundRect(width - 50 - 30, 30, 50, 50, 5, 5);
     Text.paintTo(g, "x", width - 50 - 30 + 13, 30 + 10, 3);
 

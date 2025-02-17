@@ -65,10 +65,11 @@ public class FinishLevel extends Level {
   @Override
   public void additionalPaint(Graphics2D g) {
     Color bgColor = new Color(0,0,0,50);
-    Text.paintToWithBackgroundColor(g, "Vielen Dank fürs Spielen!", -400, -380, 4, bgColor);
-    Text.paintToWithBackgroundColor(g, "Das wars. Du hast alle Planeten erkundigt.", -335, -310, 2, bgColor);
-    Text.paintToWithBackgroundColor(g, "- Nils Goeke", -100, -270, 2, bgColor);
-    Text.paintToWithBackgroundColor(g, "(github.com/NilsGke)", -90, -240, 1, bgColor);
+    Text.paintToWithBackgroundColor(g, "Vielen Dank fürs Spielen!", -400, -430, 4, bgColor);
+    Text.paintToWithBackgroundColor(g, "Das wars. Du hast alle Planeten erkundigt.", -345, -360, 2, bgColor);
+    Text.paintToWithBackgroundColor(g, "- Nils Goeke", -300, -320, 2, bgColor);
+    Text.paintToWithBackgroundColor(g, "github.com/NilsGke", -50, -320, 2, bgColor);
+
 
     Level.paintPlanetSign(g, new Vertex(-500, -260), Level_1.planetAnimation);
     Level.paintPlanetSign(g, new Vertex(-300, -200), Level_2.planetAnimation);

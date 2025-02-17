@@ -17,8 +17,7 @@ public class InputBox {
   private final String allowedCharacters;
 
   private boolean focused = false;
-  private boolean enabled = true;
-  private String content = "localhost:8080";
+  private String content = "";
 
   private static final int padding = 4;
 
@@ -75,13 +74,5 @@ public class InputBox {
 
   public void blur() {
     this.focused = false;
-  }
-
-  public void enable() {
-    this.enabled = true;
-  }
-
-  public void disable() {
-    this.enabled = false;
   }
 }

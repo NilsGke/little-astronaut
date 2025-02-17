@@ -57,6 +57,7 @@ public interface Game {
     f.pack();
     f.setLocationRelativeTo(null); // centers the window on the screen
     f.setVisible(true);
+    f.setResizable(false);
   }
 }
 

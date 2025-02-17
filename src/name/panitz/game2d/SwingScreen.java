@@ -50,13 +50,6 @@ public class SwingScreen extends JPanel{
     });
     setFocusable(true);
     requestFocus();
-    addComponentListener(new ComponentAdapter() {
-      public void componentResized(ComponentEvent e) {
-        var component = e.getComponent();
-        logic.setHeight(component.getHeight());
-        logic.setWidth(component.getWidth());
-      }
-    });
     }
 
 

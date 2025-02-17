@@ -57,6 +57,18 @@ public class WSData {
               .array();
     }
 
+    public static byte[] encodeWithoutIdentifier(byte id, byte level, double x, double y, double xVel, double yVel) {
+      return ByteBuffer
+              .allocate(2 + 8 * 4)
+              .put(0, id)
+              .put(1, level)
+              .putDouble(2, x)
+              .putDouble(2 + 8, y)
+              .putDouble(2 + 8 * 2, xVel)
+              .putDouble(2 + 8 * 3, yVel)
+              .array();
+    }
+
     public static Player decode(byte[] bytes) {
       ByteBuffer buffer = ByteBuffer.wrap(bytes);
       byte id = buffer.get(0);
@@ -105,15 +117,16 @@ public class WSData {
       return buffer.array();
     }
 
-    public static byte[] encodeWithIdentifierFromPlayerMap(Map<Byte, WSData.Player> playerMap) {
+    public static byte[] encodeWithIdentifierFromPlayerMap(Map<Byte, com.nilsgke.littleAstronaut.Player> playerMap) {
       var buffer = ByteBuffer.allocate(1 + playerMap.size() * Player.BYTES);
 
       buffer.put(0, IDENTIFIER);
 
       int counter = 0;
       for (var player : playerMap.entrySet()) {
-        Player playerData = player.getValue();
-        byte[] playerBytes = playerData.encode();
+        var playerData = player.getValue();
+
+        byte[] playerBytes = Player.encodeWithoutIdentifier(playerData.id, playerData.level, playerData.pos().x, playerData.pos().y, playerData.velocity().x, playerData.velocity().y);
         buffer.put(1 + counter * Player.BYTES, playerBytes);
         counter++;
       }

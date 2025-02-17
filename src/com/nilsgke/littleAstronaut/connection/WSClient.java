@@ -190,6 +190,7 @@ public class WSClient {
           Player existing = players.get(playerData.id());
 
           if (existing != null) { // update player, if already in map
+            existing.level = playerData.level();
             existing.pos().moveTo(new Vertex(playerData.x(), playerData.y()));
             existing.velocity().moveTo(new Vertex(playerData.xVel(), playerData.yVel()));
           } else { // create new player if not in map
@@ -198,7 +199,6 @@ public class WSClient {
                     new Vertex(playerData.x(), playerData.y()),
                     new Vertex(0, 0)
             );
-            System.out.println("adding new player to map");
 
             players.put(playerData.id(), newPlayer);
           }

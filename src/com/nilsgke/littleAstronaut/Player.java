@@ -17,6 +17,7 @@ public class Player implements GameObj {
 
   enum XDirection { LEFT, RIGHT }
   public byte id;
+  public byte level = 1;
 
   Vertex pos;
   Vertex velocity;

@@ -36,7 +36,6 @@ public class Main implements Game {
   public static int HEIGHT = 700;
 
   private Level currentLevel;
-  private byte currentLevelIndex = 5;
   private boolean gameFinished = false;
 
   private boolean DEBUG_MODE = false;
@@ -70,16 +69,16 @@ public class Main implements Game {
     this.gameObjects = new ArrayList<>();
 
     this.wsClient = new WSClient(this.player);
-    this.wsServer = new WSServer();
+    this.wsServer = new WSServer(this.player);
 
     this.menu = new Menu(WIDTH, HEIGHT, wsClient, wsServer);
     this.gameImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 
-    loadLevel(currentLevelIndex);
+    loadLevel(player.level);
   }
 
   private void loadLevel(byte levelNumber) {
-    currentLevelIndex = levelNumber;
+    player.level = levelNumber;
     System.out.printf("Loading level %d", levelNumber);
 
     Level newLevel = switch (levelNumber) {
@@ -149,20 +148,23 @@ public class Main implements Game {
 
     g2d.setColor(Color.magenta);
     // draw WSClient players
-    if (wsClient.getStatus() == WSClient.Status.CONNECTED) for (var entry : wsClient.players.entrySet()) {
-      var remoteId = entry.getKey();
-      if (remoteId != this.player.id) { // prevent painting own player
-        var remotePlayer = entry.getValue();
-        remotePlayer.paintTo(g2d);
+    if (wsClient.getStatus() == WSClient.Status.CONNECTED)
+      for (var entry : wsClient.players.entrySet()) {
+        var remoteId = entry.getKey();
+        if (remoteId != player.id) { // prevent painting own player
+          var remotePlayer = entry.getValue();
+          if(remotePlayer.level == this.player.level)
+            remotePlayer.paintTo(g2d);
+        }
       }
-    }
 
 
     // draw WSServer players
-    if (wsServer.getStatus() == WSServer.Status.RUNNING) for (var remotePlayer : WSServer.players.entrySet()) {
-      var playerData = remotePlayer.getValue();
-      if (playerData.id() != 0) g2d.drawRect((int) playerData.x(), (int) playerData.y(), 20, 20);
-    }
+    if (wsServer.getStatus() == WSServer.Status.RUNNING)
+      for (var entry : WSServer.players.entrySet()) {
+        var remotePlayer = entry.getValue();
+        if (remotePlayer.id != 0 && remotePlayer.level == this.player.level) remotePlayer.paintTo(g2d);
+      }
 
     if (!currentLevel.finished && (currentLevel.animationState != Level.AnimationState.FLYING)) player().paintTo(g2d);
 
@@ -244,7 +246,7 @@ public class Main implements Game {
           return; // prevent camera updates
         }
         case Level.AnimationState.DONE -> {
-          loadLevel((byte) (currentLevelIndex + 1));
+          loadLevel((byte) (player.level + 1));
           return;
         }
       }
@@ -346,7 +348,7 @@ public class Main implements Game {
     if (this.wsClient.getStatus() == WSClient.Status.CONNECTED) {
       // send player data to server
       try {
-        byte[] playerData = WSData.Player.encodeWithIdentifier(this.player.id, this.currentLevelIndex, this.player.pos.x, this.player.pos.y, this.player.velocity.x, this.player.velocity.y);
+        byte[] playerData = WSData.Player.encodeWithIdentifier(this.player.id, this.player.level, this.player.pos.x, this.player.pos.y, this.player.velocity.x, this.player.velocity.y);
         wsClient.sendBytes(playerData);
       } catch (IOException e) {
         System.err.println("could not send data to server");
@@ -354,14 +356,9 @@ public class Main implements Game {
       }
 
       // simulate remote player physics
-//      for (var remotePlayer : wsClient.players.entrySet())
-//        remotePlayer.getValue().move();
+      for (var remotePlayer : wsClient.players.entrySet())
+        remotePlayer.getValue().move();
     }
-
-    // if player is hosting server, add player position
-    if (this.wsServer.getStatus() == WSServer.Status.RUNNING)
-      this.wsServer.updateOwnPosition(this.currentLevelIndex, this.player.pos.x, this.player.pos.y, this.player.velocity.x, this.player.velocity.y);
-
     Toaster.updateToasts();
   }
 

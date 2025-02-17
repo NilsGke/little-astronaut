@@ -166,6 +166,7 @@ public class WSServer {
     }
   }
 
+  // GPT-4o
   private static void sendMessageToClient(OutputStream out, byte[] message) {
     try {
       out.write(0x82); // FIN + Binary opcode

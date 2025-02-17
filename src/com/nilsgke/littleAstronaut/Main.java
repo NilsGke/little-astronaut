@@ -325,21 +325,8 @@ public class Main implements Game {
 
 
     // update camera
-    // calc distance from cam to player
-    double camXDistanceToPlayer = player.pos().x + player.width() / 2 - camera.pos().x;
-    double xMarginFromCenter = width() / 2.0 - width() * CAM_MARGIN_PERCENTAGE;
-    if (Math.abs(camXDistanceToPlayer) > xMarginFromCenter)
-      // accelerate camera to the direction of the player
-      camera.acceleration().x += (camXDistanceToPlayer - (Math.signum(camXDistanceToPlayer) * xMarginFromCenter)) * deltaTime / 100.0;
-
-
-    double camYDistanceToPlayer = player.pos().y + player.height() / 2 - camera.pos().y;
-    double yMarginFromCenter = height() / 2.0 - height() * CAM_MARGIN_PERCENTAGE;
-    if (Math.abs(camYDistanceToPlayer) > yMarginFromCenter)
-      camera.acceleration().y += (camYDistanceToPlayer - (Math.signum(camYDistanceToPlayer) * yMarginFromCenter)) * deltaTime / 14.0;
-    else camera.velocity().y *= 0.5; // prevents hitting ground camera bounce to bottom and back
-
-    if (!gameFinished) camera.update(deltaTime);
+    if (!gameFinished)
+      camera.updateCamera(deltaTime, player, width(), height());
 
     if (camera.pos().y > currentLevel.minCamY())
       camera.pos().moveTo(new Vertex(camera.pos().x, currentLevel.minCamY()));

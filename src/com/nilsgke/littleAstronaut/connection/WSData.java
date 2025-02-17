@@ -97,26 +97,6 @@ public class WSData {
       return new PlayerList(list);
     }
 
-    public byte[] encode() {
-      var buffer = ByteBuffer.allocate(players.length * Player.BYTES);
-
-      for (int i = 0; i < players.length; i++)
-        buffer.put(i * Player.BYTES, players[i].encode());
-
-      return buffer.array();
-    }
-
-    public byte[] encodeWithIdentifier() {
-      var buffer = ByteBuffer.allocate(1 + players.length * Player.BYTES);
-
-      buffer.put(0, IDENTIFIER);
-
-      for (int i = 0; i < players.length; i++)
-        buffer.put(1 + i * Player.BYTES, players[i].encode());
-
-      return buffer.array();
-    }
-
     public static byte[] encodeWithIdentifierFromPlayerMap(Map<Byte, com.nilsgke.littleAstronaut.Player> playerMap) {
       var buffer = ByteBuffer.allocate(1 + playerMap.size() * Player.BYTES);
 

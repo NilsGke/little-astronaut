@@ -362,7 +362,7 @@ public class Main implements Game {
     if (this.wsServer.getStatus() == WSServer.Status.RUNNING)
       this.wsServer.updateOwnPosition(this.currentLevelIndex, this.player.pos.x, this.player.pos.y, this.player.velocity.x, this.player.velocity.y);
 
-
+    Toaster.updateToasts();
   }
 
   @Override
@@ -385,6 +385,9 @@ public class Main implements Game {
       // sequence finished
       konami_pressed = 0;
       controls = controls == Controls.JETPACK ? Controls.JUMP_KING : Controls.JETPACK;
+
+      if(controls == Controls.JETPACK) Toaster.info("Jetpack aktiviert", 4000);
+      else Toaster.error("Jetpack deaktiviert", 4000);
     }
 
   }

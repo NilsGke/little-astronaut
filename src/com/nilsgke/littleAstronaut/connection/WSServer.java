@@ -116,7 +116,7 @@ public class WSServer {
 
       System.out.println("WebSocket server stopped.");
 
-      Toaster.info("Server gestopt", 4000);
+      Toaster.error("Server gestopt", 4000);
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -233,7 +233,7 @@ public class WSServer {
         e.printStackTrace();
       } finally {
         System.out.println("Client disconnected: " + clientSocket.getLocalAddress());
-        Toaster.info("Spieler verlassen", 4000);
+        Toaster.error("Spieler verlassen", 4000);
         try {
           clientSocket.close();
         } catch (IOException e) {

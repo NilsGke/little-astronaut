@@ -36,27 +36,33 @@ public class Toaster {
     addToast(content, Toast.Type.ERROR, duration);
   }
 
+  public static void updateToasts() {
+    toasts.forEach(Toast::update);
+  }
+
   public static void paintToastsTo(Graphics2D g, int screenWidth, int screenHeight) {
     int y = 0;
     g.setStroke(new BasicStroke(2));
 
     for (Toast toast : toasts) {
       int textX = screenWidth / 2 - toast.textWidth / 2;
-      int textY = screenHeight - 40 + y;
+      int textY =  40 - y - toast.yOffset;
 
       var color = getBackgroundColor(toast.type);
+      color = modifyColorOpacity(color, toast.opacity);
 
       int BORDER_RADIUS = 20;
 
-      g.setColor(new Color(0, 0, 0, 100));
+      g.setColor(modifyColorOpacity(Color.BLACK, toast.opacity));
       g.fillRoundRect(textX - 10, textY - 10, toast.textWidth + 10 * 2, TEXT_HEIGHT + 10 * 2, BORDER_RADIUS, BORDER_RADIUS);
-      g.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue()));
+      g.setColor(color);
 
       g.drawRoundRect(textX - 10, textY - 10, toast.textWidth + 10 * 2, TEXT_HEIGHT + 10 * 2, BORDER_RADIUS, BORDER_RADIUS);
 
 
-      g.setColor(Color.WHITE);
-      Text.paintTo(g, toast.content, textX, textY, 2);
+      Text.paintTo(g, toast.content, textX, textY, 2, modifyColorOpacity(Color.WHITE, toast.opacity));
+
+      g.setColor(modifyColorOpacity(Color.WHITE, toast.opacity));
 
       double runningSince = System.currentTimeMillis() - toast.createdAt;
       double percentage = (toast.duration - runningSince) / toast.duration;
@@ -73,6 +79,10 @@ public class Toaster {
       case Type.ERROR -> Color.RED;
       default -> Color.GRAY;
     };
+  }
+
+  private static Color modifyColorOpacity(Color c, float opacity) {
+    return new Color(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, opacity);
   }
 
 }

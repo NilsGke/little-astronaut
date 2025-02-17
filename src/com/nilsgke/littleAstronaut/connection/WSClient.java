@@ -94,7 +94,7 @@ public class WSClient {
   }
 
   public void disconnect() {
-    Toaster.info("Verbindung getrennt", 4000);
+    Toaster.error("Verbindung getrennt", 4000);
     try {
       if (in != null) in.close();
       if (out != null) out.close();

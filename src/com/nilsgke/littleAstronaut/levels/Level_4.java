@@ -41,9 +41,11 @@ public class Level_4 extends Level {
                     Platform.createHorizontalTilePlatform(350, -460, 2, Tilesets.darkRedPlatform),
                     Platform.createHorizontalTilePlatform(220, -600, 3, Tilesets.darkRedPlatform),
                     Wall.createVerticalTileWall(600, -700, 3, Tilesets.darkRedPlatform),
+                    Platform.createHorizontalTilePlatform(0, -800, 1, Tilesets.darkRedPlatform),
+                    Platform.createHorizontalTilePlatform(220, -1000, 5, Tilesets.darkRedPlatform),
             },
             new Vertex(0, -30),
-            new Vertex(400, -1090),
+            new Vertex(400, -1160),
             new Vertex(-300, -200),
             planetAnimation,
             backdrop

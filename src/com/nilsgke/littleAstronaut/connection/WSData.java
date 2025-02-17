@@ -25,6 +25,7 @@ public class WSData {
     public static final byte IDENTIFIER = (byte) 0x1;
     public static final int BYTES = 2 + 8 * 4;
 
+    // 1 byte for identifier
     // 1 byte for id
     // 1 byte for level
     // 8 bytes for x (double)
@@ -34,13 +35,14 @@ public class WSData {
 
     public byte[] encode() {
       return ByteBuffer
-              .allocate(2 + 8 * 4)
-              .put(0, id)
-              .put(1, level)
-              .putDouble(2, x)
-              .putDouble(2 + 8, y)
-              .putDouble(2 + 8 * 2, xVel)
-              .putDouble(2 + 8 * 3, yVel)
+              .allocate(3 + 8 * 4)
+              .put(0, IDENTIFIER)
+              .put(1, id)
+              .put(2, level)
+              .putDouble(3, x)
+              .putDouble(3 + 8, y)
+              .putDouble(3 + 8 * 2, xVel)
+              .putDouble(3 + 8 * 3, yVel)
               .array();
     }
 

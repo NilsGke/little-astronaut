@@ -7,8 +7,8 @@ import name.panitz.game2d.Vertex;
 public class MovingPlatform extends Platform {
   final int initialX;
   final int initialY;
-  int moveX;
-  int moveY;
+  final int moveX;
+  final int moveY;
   final int moveTime;
 
   protected MovingPlatform(int x, int y, double width, double height, int moveX, int moveY, int moveTime, ImageTileset tileset) {

@@ -4,9 +4,6 @@ import com.nilsgke.littleAstronaut.sprites.ImageHelper;
 import com.nilsgke.littleAstronaut.sprites.ImageTileset;
 import name.panitz.game2d.Vertex;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-
 public class Wall extends Platform {
 
 
@@ -16,6 +13,7 @@ public class Wall extends Platform {
 
     // flip width and height
     double temp = this.width;
+    //noinspection SuspiciousNameCombination
     this.width = this.height;
     this.height = temp;
     // the constructor generates a horizontal image that we need to rotate by 90 deg

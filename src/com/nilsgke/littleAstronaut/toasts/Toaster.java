@@ -1,4 +1,4 @@
-package com.nilsgke.littleAstronaut.Toasts;
+package com.nilsgke.littleAstronaut.toasts;
 
 import com.nilsgke.littleAstronaut.sprites.Text;
 
@@ -6,10 +6,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.Timer;
 
-import static com.nilsgke.littleAstronaut.Toasts.Toast.Type;
+import static com.nilsgke.littleAstronaut.toasts.Toast.Type;
 
 public class Toaster {
-  static ArrayList<Toast> toasts = new ArrayList<>();
+  static final ArrayList<Toast> toasts = new ArrayList<>();
   private static final int TEXT_HEIGHT = Text.getHeight(2);
 
   private static void addToast(String content, Toast.Type type, int duration) {
@@ -77,7 +77,6 @@ public class Toaster {
       case Type.INFO -> Color.GREEN;
       case Type.TIP -> Color.YELLOW;
       case Type.ERROR -> Color.RED;
-      default -> Color.GRAY;
     };
   }
 

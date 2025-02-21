@@ -3,11 +3,11 @@ package com.nilsgke.littleAstronaut.menu;
 import java.awt.event.MouseEvent;
 
 public class Clickable {
-  int x;
-  int y;
-  int width;
-  int height;
-  Runnable onClickAction;
+  final int x;
+  final int y;
+  final int width;
+  final int height;
+  final Runnable onClickAction;
   boolean mouseIsDown;
 
   public Clickable(int x, int y, int width, int height, Runnable onClickAction) {

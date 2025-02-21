@@ -8,14 +8,14 @@ import java.awt.image.BufferedImage;
 
 /// will take an image, split it evenly by `frameCount` and then render it based on time
 public class Animation {
-  BufferedImage sprite;
-  int frameCount;
+  final BufferedImage sprite;
+  final int frameCount;
   long startedAt;
-  int frameWidth;
-  int frameHeight;
-  BufferedImage[] frames;
-  int durationMs;
-  boolean repeat;
+  final int frameWidth;
+  final int frameHeight;
+  final BufferedImage[] frames;
+  final int durationMs;
+  final boolean repeat;
 
 
   public Animation(BufferedImage sprite, int frameCount, int durationMs, boolean repeat) {

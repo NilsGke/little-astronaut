@@ -1,7 +1,7 @@
 package com.nilsgke.littleAstronaut.connection;
 
 import com.nilsgke.littleAstronaut.Player;
-import com.nilsgke.littleAstronaut.Toasts.Toaster;
+import com.nilsgke.littleAstronaut.toasts.Toaster;
 import name.panitz.game2d.Vertex;
 
 import java.io.*;

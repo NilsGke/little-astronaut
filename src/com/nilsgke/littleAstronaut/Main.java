@@ -1,7 +1,7 @@
 package com.nilsgke.littleAstronaut;
 
 
-import com.nilsgke.littleAstronaut.Toasts.Toaster;
+import com.nilsgke.littleAstronaut.toasts.Toaster;
 import com.nilsgke.littleAstronaut.connection.WSClient;
 import com.nilsgke.littleAstronaut.connection.WSData;
 import com.nilsgke.littleAstronaut.connection.WSServer;
@@ -30,8 +30,8 @@ public class Main implements Game {
 
   static final double CAM_MARGIN_PERCENTAGE = 0.4;
 
-  Player player;
-  List<List<? extends GameObj>> gameObjects;
+  final Player player;
+  final List<List<? extends GameObj>> gameObjects;
   public static int WIDTH = 1000;
   public static int HEIGHT = 700;
 
@@ -45,21 +45,21 @@ public class Main implements Game {
   private boolean gameImageBlurred = false;
 
   //GameMap gameMap;
-  Camera camera;
+  final Camera camera;
 
   Controls controls = Controls.JUMP_KING;
 
   boolean canJump = false;
   double jumpValue = 0;
-  ArrayList<Integer> pressedKeys = new ArrayList<>();
+  final ArrayList<Integer> pressedKeys = new ArrayList<>();
 
   int konami_pressed = 0;
   static final int[] konami_sequence = {38, 38, 40, 40, 37, 39, 37, 39, 66, 65}; // up, up, down, down, left, right, left, right, b, a
 
-  WSServer wsServer = null;
-  WSClient wsClient = null;
+  WSServer wsServer;
+  WSClient wsClient;
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     new Main().play();
   }
 
@@ -166,7 +166,7 @@ public class Main implements Game {
         if (remotePlayer.id != 0 && remotePlayer.level == this.player.level) remotePlayer.paintTo(g2d);
       }
 
-    if (!currentLevel.finished && (currentLevel.animationState != Level.AnimationState.FLYING)) player().paintTo(g2d);
+    if (currentLevel.animationState != Level.AnimationState.FLYING) player().paintTo(g2d);
 
     currentLevel.paintRocket(g2d);
 
@@ -232,12 +232,10 @@ public class Main implements Game {
         case Level.AnimationState.NOT_STARTED -> {
 
         }
-        case Level.AnimationState.STARTING -> {
-
+        case Level.AnimationState.STARTING ->
           // move player horizontally to rocket
           this.player.pos.add(new Vertex(((this.player.pos.x + this.player.width / 2) - (this.currentLevel.completeZone.pos().x + this.currentLevel.completeZone.width() / 2)) * -0.1, 0));
 
-        }
         case Level.AnimationState.FLYING -> {
           currentLevel.completeZone.velocity().add(new Vertex(0, -0.2));
           currentLevel.completeZone.pos().add(currentLevel.completeZone.velocity());
@@ -274,7 +272,7 @@ public class Main implements Game {
 
 
     // walking
-    if (!currentLevel.finished && !currentLevel.finishAnimation && (controls == Controls.JETPACK || (onGround && jumpValue == 0))) {
+    if (!currentLevel.finishAnimation && (controls == Controls.JETPACK || (onGround && jumpValue == 0))) {
       // slowly increasing the velocity in the direction the user is holidng but cap max speed
       if (pressedKeys.contains(KeyEvent.VK_D) || pressedKeys.contains(KeyEvent.VK_RIGHT))
         playerVelocity.x += PLAYER_SPEED * deltaTime / 70.0;

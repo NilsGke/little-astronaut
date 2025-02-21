@@ -1,7 +1,7 @@
 package com.nilsgke.littleAstronaut.connection;
 
 import com.nilsgke.littleAstronaut.Player;
-import com.nilsgke.littleAstronaut.Toasts.Toaster;
+import com.nilsgke.littleAstronaut.toasts.Toaster;
 import name.panitz.game2d.Vertex;
 
 import java.io.*;
@@ -272,7 +272,8 @@ public class WSServer {
       if (payloadLength == 126) {
         payloadLength = (in.read() << 8) | in.read();
       } else if (payloadLength == 127) {
-        for (int i = 0; i < 6; i++) in.read(); // Skip the first 6 bytes (only last 2 are used)
+        for (int i = 0; i < 6; i++) //noinspection ResultOfMethodCallIgnored
+          in.read(); // Skip the first 6 bytes (only last 2 are used)
         payloadLength = (in.read() << 8) | in.read();
       }
 

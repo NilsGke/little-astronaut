@@ -41,7 +41,7 @@ public class Menu {
 
     clickables = new Clickable[]{
             // close button
-            new Clickable(width - 50 - 30, 30, 50, 50, () -> close()),
+            new Clickable(width - 50 - 30, 30, 50, 50, this::close),
 
             // server start button
             new Clickable(350, 587, startIcon.getWidth() * 2, startIcon.getHeight() * 2, () -> {

@@ -1,4 +1,4 @@
-package com.nilsgke.littleAstronaut.Toasts;
+package com.nilsgke.littleAstronaut.toasts;
 
 import com.nilsgke.littleAstronaut.sprites.Text;
 

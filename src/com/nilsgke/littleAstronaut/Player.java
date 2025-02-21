@@ -18,8 +18,8 @@ public class Player implements GameObj {
 
   Vertex pos;
   Vertex velocity;
-  double width;
-  double height;
+  final double width;
+  final double height;
   XDirection lastDirection;
 
   Animation animation_walkRight;

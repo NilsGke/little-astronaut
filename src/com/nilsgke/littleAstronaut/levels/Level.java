@@ -26,10 +26,9 @@ public abstract class Level {
   public Vertex rocketPos;
   public Boolean finishAnimation = false;
   public AnimationState animationState = AnimationState.NOT_STARTED;
-  public Boolean finished = false;
   private final Vertex planetSignPos;
   private final Animation planetAnimation;
-  private short blackScreenOpacity = 0;
+  private short blackScreenOpacity;
   protected final BufferedImage backdrop;
 
   private static final BufferedImage rocketImage;
@@ -82,7 +81,7 @@ public abstract class Level {
   }
 
   public void checkIfInCompletionZone(Player player) {
-    if (finishAnimation || finished || !player.touches(this.completeZone)) return;
+    if (finishAnimation || !player.touches(this.completeZone)) return;
 
     System.out.println("finish Animation");
 
@@ -124,7 +123,7 @@ public abstract class Level {
   }
 
   public void paintRocket(Graphics g) {
-    if (!finished && animationState != AnimationState.FLYING)
+    if (animationState != AnimationState.FLYING)
       g.drawImage(rocketImage, (int) this.rocketPos.x, (int) this.rocketPos.y, rocketImage.getWidth() * 4, rocketImage.getHeight() * 4, null);
 
     else {

@@ -135,7 +135,7 @@ public class WSClient {
     } else {
       outputStream.write(127); // 127 indicates a 64-bit payload length follows
       for (int i = 7; i >= 0; i--) {
-        outputStream.write((int) (data.length >> (i * 8)) & 0xFF); // Write each byte of the length
+        outputStream.write((data.length >> (i * 8)) & 0xFF); // Write each byte of the length
       }
     }
 

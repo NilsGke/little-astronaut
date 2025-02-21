@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 public class Level_3 extends Level {
   public static final Animation planetAnimation;
-  private MovingPlatform[] movingPlatforms;
+  private final MovingPlatform[] movingPlatforms;
   private static final BufferedImage backdrop;
 
   static {

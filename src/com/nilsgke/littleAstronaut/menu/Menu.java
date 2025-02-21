@@ -19,11 +19,11 @@ public class Menu {
   public Clickable[] clickables;
   private InputBox ipInput;
 
-  private static BufferedImage startIcon;
-  private static BufferedImage terminateIcon;
+  private static final BufferedImage startIcon;
+  private static final BufferedImage terminateIcon;
 
-  private WSServer wsServer;
-  private WSClient wsClient;
+  private final WSServer wsServer;
+  private final WSClient wsClient;
 
   static {
     try {

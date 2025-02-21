@@ -54,7 +54,7 @@ public class SwingScreen extends JPanel{
 
 
   @Override public Dimension getPreferredSize() {
-    return new Dimension((int)logic.width(),(int)logic.height());
+    return new Dimension(logic.width(), logic.height());
   }
 
 

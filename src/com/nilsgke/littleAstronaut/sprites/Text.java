@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class Text {
   private static final BufferedImage textMap;
@@ -138,47 +137,25 @@ public class Text {
     return coloredImage;
   }
 
-  private static class CharColorKey {
-    private final char character;
-    private final Color color;
-
-    public CharColorKey(char character, Color color) {
-      this.character = character;
-      this.color = color;
-    }
+  private record CharColorKey(char character, Color color) {
 
     @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof CharColorKey key)) return false;
-      return character == key.character && color.equals(key.color);
-    }
+      public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CharColorKey(char character1, Color color1))) return false;
+        return character == character1 && color.equals(color1);
+      }
 
-    @Override
-    public int hashCode() {
-      return Objects.hash(character, color);
-    }
   }
 
-  private static class StringColorKey {
-    private final String text;
-    private final Color color;
-
-    public StringColorKey(String text, Color color) {
-      this.text = text;
-      this.color = color;
-    }
+  private record StringColorKey(String text, Color color) {
 
     @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof StringColorKey key)) return false;
-      return text.equals(key.text) && color.equals(key.color);
-    }
+      public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StringColorKey(String text1, Color color1))) return false;
+        return text.equals(text1) && color.equals(color1);
+      }
 
-    @Override
-    public int hashCode() {
-      return Objects.hash(text, color);
-    }
   }
 }

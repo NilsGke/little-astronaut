@@ -360,7 +360,7 @@ public class Main implements Game {
 
   @Override
   public void keyReleasedReaction(KeyEvent keyEvent) {
-    pressedKeys.remove(pressedKeys.indexOf(keyEvent.getKeyCode()));
+    pressedKeys.remove((Integer) keyEvent.getKeyCode());
 
     // konami code
     if (konami_sequence[konami_pressed] == keyEvent.getKeyCode()) konami_pressed++;
@@ -393,22 +393,22 @@ public class Main implements Game {
 
   @Override
   public int width() {
-    return this.WIDTH;
+    return WIDTH;
   }
 
   @Override
   public int height() {
-    return this.HEIGHT;
+    return HEIGHT;
   }
 
   @Override
   public void setHeight(int height) {
-    this.HEIGHT = height;
+    HEIGHT = height;
   }
 
   @Override
   public void setWidth(int width) {
-    this.WIDTH = width;
+    WIDTH = width;
   }
 
   @Override

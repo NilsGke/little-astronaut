@@ -11,7 +11,6 @@ public class ImageHelper {
   public static BufferedImage readImageFileAt(String path) throws IOException {
     InputStream is = ImageHelper.class.getResourceAsStream(path);
     if (is == null) throw new IOException("image not found at path: " + path);
-    System.out.println("readFile: " + path);
     return ImageIO.read(is);
   }
 

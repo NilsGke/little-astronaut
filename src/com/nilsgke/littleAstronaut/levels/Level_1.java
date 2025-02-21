@@ -65,10 +65,10 @@ public class Level_1 extends Level {
 
 
     Text.paintToWithBackgroundColor(g, "Um höher zu springen musst du", 1750, 400, 3, bgColor);
-    Text.paintToWithBackgroundColor(g, "die Leertaste länger drücken", 1750, 430, 3, bgColor);
+    Text.paintToWithBackgroundColor(g, "die Leertaste länger drücken", 1745, 430, 3, bgColor);
 
     Text.paintToWithBackgroundColor(g, "Übrigens kannst du mir escape", 2700, 300, 2, bgColor);
-    Text.paintToWithBackgroundColor(g, "den multiplayer aktivieren", 2750, 330, 2, bgColor);
+    Text.paintToWithBackgroundColor(g, "den multiplayer aktivieren", 2730, 330, 2, bgColor);
 
     Text.paintToWithBackgroundColor(g, "Du hast das Level geschafft,", 3600, 300, 3, bgColor);
     Text.paintToWithBackgroundColor(g, "wenn du bei der Rakete angekommen bist.", 3500, 330, 3, bgColor);

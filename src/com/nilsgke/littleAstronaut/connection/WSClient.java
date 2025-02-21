@@ -110,6 +110,10 @@ public class WSClient {
     return this.status;
   }
 
+  public void resetStatus() {
+    this.status = Status.IDLE;
+  }
+
   public void setStatusToError() {
     this.status = Status.ERROR;
   }

@@ -13,6 +13,9 @@ import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 
 public class Menu {
   private boolean isOpen = false;
@@ -79,6 +82,9 @@ public class Menu {
                 wsClient.setStatusToError();
                 System.err.println(e.getMessage());
                 System.err.println(Arrays.toString(e.getStackTrace()));
+                // reset error after a second
+                var scheduler = newSingleThreadScheduledExecutor();
+                scheduler.schedule(wsClient::resetStatus, 2000, TimeUnit.MILLISECONDS);
               }
 
 

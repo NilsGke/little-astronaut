@@ -5,10 +5,8 @@ import com.nilsgke.littleAstronaut.sprites.*;
 import com.nilsgke.littleAstronaut.map.Platform;
 import name.panitz.game2d.Vertex;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 /// **Earth**. <br>

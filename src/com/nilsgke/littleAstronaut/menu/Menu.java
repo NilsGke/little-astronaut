@@ -5,14 +5,12 @@ import com.nilsgke.littleAstronaut.connection.WSServer;
 import com.nilsgke.littleAstronaut.sprites.ImageHelper;
 import com.nilsgke.littleAstronaut.sprites.Text;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 

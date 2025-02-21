@@ -5,10 +5,8 @@ import com.nilsgke.littleAstronaut.sprites.ImageHelper;
 import name.panitz.game2d.GameObj;
 import name.panitz.game2d.Vertex;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 

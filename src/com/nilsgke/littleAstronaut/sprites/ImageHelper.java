@@ -1,10 +1,23 @@
 package com.nilsgke.littleAstronaut.sprites;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ImageHelper {
+
+  public static BufferedImage readImageFileAt(String path) throws IOException {
+    InputStream is = ImageHelper.class.getResourceAsStream(path);
+    if (is == null) throw new IOException("image not found at path: " + path);
+    System.out.println("readFile: " + path);
+    return ImageIO.read(is);
+  }
+
+
+
   /**
    * Converts a given Image into a BufferedImage
    *

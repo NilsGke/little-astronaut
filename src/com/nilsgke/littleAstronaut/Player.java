@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 
 
-
 public class Player implements GameObj {
 
   enum XDirection { LEFT, RIGHT }
@@ -38,19 +37,19 @@ public class Player implements GameObj {
     this.height = 70;
 
     try {
-      BufferedImage spriteRunRight = ImageIO.read(new File("assets/player/astronaut-run.png"));
+      BufferedImage spriteRunRight = ImageHelper.readImageFileAt("/assets/player/astronaut-run.png");
       spriteRunRight = ImageHelper.toBufferedImage(spriteRunRight.getScaledInstance(spriteRunRight.getWidth() * 2, spriteRunRight.getHeight() * 2, Image.SCALE_DEFAULT));
       this.animation_walkRight = new Animation(spriteRunRight, 6, 600, true);
 
-      BufferedImage spriteRunLeft = ImageIO.read(new File("assets/player/astronaut-run.png"));
+      BufferedImage spriteRunLeft = ImageHelper.readImageFileAt("/assets/player/astronaut-run.png");
       spriteRunLeft = ImageHelper.toBufferedImage(spriteRunLeft.getScaledInstance(spriteRunLeft.getWidth() * 2, spriteRunLeft.getHeight() * 2, Image.SCALE_DEFAULT));
       this.animation_walkLeft = new Animation(spriteRunLeft, 6, 600, true);
 
-      BufferedImage spriteJump = ImageIO.read(new File("assets/player/astronaut-jump.png"));
+      BufferedImage spriteJump = ImageHelper.readImageFileAt("/assets/player/astronaut-jump.png");
       spriteJump = ImageHelper.toBufferedImage(spriteJump.getScaledInstance(spriteJump.getWidth() * 2, spriteJump.getHeight() * 2, Image.SCALE_DEFAULT));
       this.animation_jump = new Animation(spriteJump, 5, 600, false);
 
-      BufferedImage spriteIdle = ImageIO.read(new File("assets/player/astronaut-idle.png"));
+      BufferedImage spriteIdle = ImageHelper.readImageFileAt("/assets/player/astronaut-idle.png");
       spriteIdle = ImageHelper.toBufferedImage(spriteIdle.getScaledInstance(spriteIdle.getWidth() * 2, spriteIdle.getHeight() * 2, Image.SCALE_DEFAULT));
       this.animation_idle = new Animation(spriteIdle, 6, 2000, true);
 

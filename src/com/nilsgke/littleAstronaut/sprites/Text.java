@@ -22,7 +22,7 @@ public class Text {
 
   static {
     try {
-      textMap = ImageIO.read(new File("assets/text/text-white.png"));
+      textMap = ImageHelper.readImageFileAt("/assets/text/text-white.png");
       generateBaseCharacters();
     } catch (IOException e) {
       throw new RuntimeException("Failed to load text-white image", e);

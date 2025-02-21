@@ -2,6 +2,7 @@ package com.nilsgke.littleAstronaut.menu;
 
 import com.nilsgke.littleAstronaut.connection.WSClient;
 import com.nilsgke.littleAstronaut.connection.WSServer;
+import com.nilsgke.littleAstronaut.sprites.ImageHelper;
 import com.nilsgke.littleAstronaut.sprites.Text;
 
 import javax.imageio.ImageIO;
@@ -28,8 +29,8 @@ public class Menu {
 
   static {
     try {
-      terminateIcon = ImageIO.read(new File("assets/icons/Close.png"));
-      startIcon = ImageIO.read(new File("assets/icons/Play.png"));
+      terminateIcon = ImageHelper.readImageFileAt("/assets/icons/Close.png");
+      startIcon = ImageHelper.readImageFileAt("/assets/icons/Play.png");
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

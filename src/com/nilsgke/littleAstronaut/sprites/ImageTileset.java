@@ -12,9 +12,9 @@ public class ImageTileset {
 
   public ImageTileset(String tileImgPath, String leftEndImgPath, String rightEndImgPath){
     try {
-      this.tile = ImageIO.read(new File(tileImgPath));
-      this.leftEnd = ImageIO.read(new File(leftEndImgPath));
-      this.rightEnd = ImageIO.read(new File(rightEndImgPath));
+      this.tile = ImageHelper.readImageFileAt(tileImgPath);
+      this.leftEnd = ImageHelper.readImageFileAt(leftEndImgPath);
+      this.rightEnd = ImageHelper.readImageFileAt(rightEndImgPath);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

@@ -20,9 +20,9 @@ public class Level_2 extends Level {
 
   static {
     try {
-      planetAnimation = new Animation(ImageIO.read(new File("assets/planets/desert.png")), 50, 10000, true);
+      planetAnimation = new Animation(ImageHelper.readImageFileAt("/assets/planets/desert.png"), 50, 10000, true);
 
-      BufferedImage bd = ImageIO.read(new File("assets/backdrops/level_2.png"));
+      BufferedImage bd = ImageHelper.readImageFileAt("/assets/backdrops/level_2.png");
       backdrop = ImageHelper.toBufferedImage(bd.getScaledInstance(bd.getWidth() *2, bd.getHeight() *2, Image.SCALE_DEFAULT));
     } catch (IOException e) {
       throw new RuntimeException(e);

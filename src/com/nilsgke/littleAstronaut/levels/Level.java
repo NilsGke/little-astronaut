@@ -40,13 +40,13 @@ public abstract class Level {
 
   static {
     try {
-      rocketImage = ImageIO.read(new File("assets/rocket/rocket.png"));
+      rocketImage = ImageHelper.readImageFileAt("/assets/rocket/rocket.png");
 
-      BufferedImage fireAnimationImage = ImageIO.read(new File("assets/rocket/fire-animation.png"));
+      BufferedImage fireAnimationImage = ImageHelper.readImageFileAt("/assets/rocket/fire-animation.png");
       fireAnimationImage = ImageHelper.toBufferedImage(fireAnimationImage.getScaledInstance(fireAnimationImage.getWidth() * 2, fireAnimationImage.getHeight() * 2, Image.SCALE_DEFAULT));
       fireAnimation = new Animation(fireAnimationImage, 19, 1000, true);
 
-      var planetSignImage = ImageIO.read(new File("assets/planets/planet-sign.png"));
+      var planetSignImage = ImageHelper.readImageFileAt("/assets/planets/planet-sign.png");
       planetSign = ImageHelper.toBufferedImage(planetSignImage.getScaledInstance(
               planetSignImage.getWidth() * 2,
               planetSignImage.getHeight() * 2,
